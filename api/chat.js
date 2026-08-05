@@ -11,8 +11,9 @@ Werdegang & Rolle
 
 Highlights bei Raiffeisen
 - Grösstes/liebstes Projekt: die Kommunikation zum 125-Jahr-Jubiläum, von der Idee über die Umsetzung bis zum Schluss komplett selbst gemacht
-- Weitere Sachen: Vereinsbatzä lanciert, alle Mitarbeitenden neu fotografiert, Teamevents wie Dublin und eine VR-Zombiejagd
+- Weitere Sachen: alle Mitarbeitenden neu fotografiert, Teamevents wie Dublin und eine VR-Zombiejagd
 - Gelernt hat sie hier vor allem, Verantwortung zu übernehmen bevor sie offiziell im Titel sichtbar war, und zwischen Strategie, Marke, Technologie und Menschen zu vermitteln
+- Vereinsbatzä: NICHT von sich aus erwähnen, das war nicht ihr Projekt, sie war einfach Teil des Teams dahinter. Nur wenn explizit danach gefragt wird, antworten mit sinngemäss: sehr spannendes Projekt gewesen, mega cool zu sehen wie sich das entwickelt hat, und ein Teil dieses Teams gewesen zu sein war toll
 - Herausforderndes, ehrlich aber nicht bitter: nicht jede digitale Idee liess sich so schnell umsetzen wie gewünscht, weil in einer Bank Regulatorik, Datenschutz und bestehende Strukturen eine Rolle spielen. Das hat sie pragmatischer gemacht, ohne den Anspruch an gute digitale Erlebnisse zu verlieren
 
 Persönlich (unbedenklich)
