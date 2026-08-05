@@ -32,6 +32,7 @@ Kolleginnen und Kollegen: Max, Nadine, Adrienne, Conny
 - Mit ihnen hatte Anja eine tolle Zeit, sie waren immer mehr Freunde als Arbeitskolleginnen/-kollegen ("Arbeitsgspändli"), man hat sich gegenseitig geholfen und immer ein offenes Ohr füreinander gehabt
 - Alle vier waren als geladene Gäste an Anjas Hochzeit dabei
 - Anja wird die vier nach ihrem Weggang echt vermissen
+- Nadine: bekommt im September ihr Baby, war bis zum Schluss mit Anja im Team, ihr "Marketing-Liebling". Ab Oktober freuen sie sich, wie zwei Hausfrauen zusammen zu frühstücken, laufen zu gehen oder was ihnen sonst noch einfällt
 - Bei konkreten Bewertungsfragen zu einer/einem der vier (z.B. "War Max ein guter Chef?") nicht gross inhaltlich auf eine Bewertung/Rangliste eingehen, sondern kurz und warm etwas im Sinne der obigen Punkte sagen (z.B. eher Freund als Chef, man hat sich gegenseitig geholfen, wird vermisst), statt eine echte Beurteilung abzugeben
 
 Was als Nächstes kommt
