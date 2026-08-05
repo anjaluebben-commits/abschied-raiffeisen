@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abschied – Anja Renggli, Raiffeisenbank Rigi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08080a;
+    --bg-soft:#111114;
+    --panel:#131316;
+    --line:#2a2a30;
+    --yellow:#FFD400;
+    --yellow-dim:#8a7300;
+    --red:#e82025;
+    --text:#f2f2f0;
+    --text-dim:#8b8b93;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:
+      radial-gradient(circle at 15% 10%, rgba(255,212,0,0.05), transparent 40%),
+      radial-gradient(circle at 85% 30%, rgba(232,32,37,0.05), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Space Grotesk', sans-serif; font-weight:600; letter-spacing:-0.01em;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  section{padding:5rem 1.5rem; max-width:760px; margin:0 auto;}
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--yellow);
+    margin-bottom:1rem;
+    display:block;
+  }
+  ::selection{background:var(--yellow); color:#000;}
+
+  /* HERO */
+  .hero{
+    min-height:100svh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:2rem 1.5rem;
+    border-bottom:1px solid var(--line);
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:linear-gradient(rgba(255,212,0,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,212,0,0.035) 1px, transparent 1px);
+    background-size:42px 42px;
+    mask-image:radial-gradient(circle at 30% 20%, black, transparent 70%);
+    pointer-events:none;
+  }
+  .hero-inner{max-width:760px; margin:0 auto; width:100%; position:relative;}
+  #boot{
+    font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--yellow);
+    margin-bottom:1.75rem; min-height:1.2em; letter-spacing:0.02em;
+  }
+  #boot::after{content:"█"; animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  .hero h1{font-size:clamp(2.3rem, 6.5vw, 4rem); line-height:1.08; margin-bottom:1.5rem;}
+  .hero h1 .hl{color:var(--yellow);}
+  .hero p.sub{color:var(--text-dim); font-size:1.05rem; max-width:48ch; margin-bottom:2.5rem;}
+  .meta-row{
+    display:flex; flex-wrap:wrap; gap:2.5rem;
+    border-top:1px solid var(--line); padding-top:1.5rem;
+  }
+  .meta-item .label{font-family:'IBM Plex Mono', monospace; font-size:0.68rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.09em; margin-bottom:0.35rem;}
+  .meta-item .value{font-size:1.02rem;}
+  #countdown{font-family:'IBM Plex Mono', monospace; font-size:1.5rem; color:var(--yellow);}
+
+  /* LOG / TIMELINE */
+  .log-head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    border-bottom:1px solid var(--yellow); padding-bottom:0.75rem; margin-bottom:0.25rem;
+  }
+  .log-head span{font-family:'IBM Plex Mono', monospace; font-size:0.7rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.09em;}
+  .entry{
+    display:grid; grid-template-columns:60px 1fr; gap:1.25rem;
+    padding:1.35rem 0; border-bottom:1px solid var(--line);
+  }
+  .entry .idx{font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--yellow-dim); padding-top:0.15rem;}
+  .entry .desc h3{font-size:1.12rem; margin-bottom:0.3rem;}
+  .entry .desc p{color:var(--text-dim); font-size:0.94rem;}
+  .entry.final .idx{color:var(--yellow);}
+  .entry.final{border-bottom:1px solid var(--yellow);}
+
+  /* RSVP */
+  .rsvp-box{background:var(--panel); border:1px solid var(--line); padding:2.5rem 2rem; border-radius:2px;}
+  .rsvp-box h2{font-size:1.75rem; margin-bottom:0.5rem;}
+  .rsvp-box .deadline{color:var(--yellow); font-family:'IBM Plex Mono', monospace; font-size:0.82rem; margin-bottom:2rem; display:block;}
+  form{display:flex; flex-direction:column; gap:1.1rem;}
+  label{font-family:'IBM Plex Mono', monospace; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); margin-bottom:0.4rem; display:block;}
+  input[type=text], input[type=email], textarea{
+    width:100%; background:var(--bg); border:1px solid var(--line); color:var(--text);
+    padding:0.75rem 0.9rem; font-family:'Inter'; font-size:0.95rem; border-radius:2px;
+  }
+  input:focus, textarea:focus{outline:2px solid var(--yellow); outline-offset:1px;}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:1.1rem;}
+  @media (max-width:520px){.row2{grid-template-columns:1fr;}}
+  button.submit{
+    margin-top:0.5rem; background:var(--yellow); color:#0a0a0a; border:none; padding:0.9rem 1.5rem;
+    font-family:'IBM Plex Mono', monospace; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.08em;
+    cursor:pointer; border-radius:2px; transition:opacity 0.15s;
+  }
+  button.submit:hover{opacity:0.85;}
+  .rsvp-note{font-size:0.8rem; color:var(--text-dim); margin-top:1rem;}
+
+  /* CONCIERGE */
+  .concierge{background:var(--panel); border:1px solid var(--line); border-radius:2px; overflow:hidden;}
+  .concierge-head{padding:1.25rem 1.5rem; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:0.6rem;}
+  .dot{width:8px; height:8px; border-radius:50%; background:var(--red); box-shadow:0 0 8px var(--red);}
+  #chat-log{padding:1.5rem; min-height:180px; max-height:340px; overflow-y:auto; display:flex; flex-direction:column; gap:0.9rem; font-size:0.92rem;}
+  .msg{max-width:85%; padding:0.6rem 0.9rem; border-radius:6px; line-height:1.45;}
+  .msg.bot{background:var(--bg-soft); align-self:flex-start; border:1px solid var(--line);}
+  .msg.user{background:var(--yellow); color:#0a0a0a; align-self:flex-end;}
+  .chat-input-row{display:flex; border-top:1px solid var(--line);}
+  #chat-input{flex:1; background:transparent; border:none; color:var(--text); padding:1rem; font-family:'Inter'; font-size:0.9rem;}
+  #chat-input:focus{outline:none;}
+  #chat-send{background:transparent; border:none; color:var(--yellow); font-family:'IBM Plex Mono'; font-size:0.8rem; padding:0 1.5rem; cursor:pointer; text-transform:uppercase; letter-spacing:0.06em;}
+
+  /* GAME */
+  .game-box{background:var(--panel); border:1px solid var(--line); border-radius:2px; padding:2rem;}
+  #quiz-progress{font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--text-dim); margin-bottom:1.25rem; text-transform:uppercase; letter-spacing:0.08em;}
+  #quiz-question{font-size:1.2rem; margin-bottom:1.5rem;}
+  .quiz-options{display:flex; flex-direction:column; gap:0.7rem;}
+  .quiz-opt{
+    text-align:left; background:var(--bg); border:1px solid var(--line); color:var(--text);
+    padding:0.85rem 1rem; font-family:'Inter'; font-size:0.95rem; border-radius:2px; cursor:pointer;
+    transition:border-color 0.15s;
+  }
+  .quiz-opt:hover{border-color:var(--yellow);}
+  .quiz-opt.correct{border-color:var(--yellow); background:rgba(255,212,0,0.08);}
+  .quiz-opt.wrong{border-color:var(--red); background:rgba(232,32,37,0.08);}
+  #quiz-result{display:none; text-align:center;}
+  #quiz-result .score{font-family:'Space Grotesk'; font-size:2.4rem; color:var(--yellow); margin:0.5rem 0;}
+  #quiz-restart{
+    margin-top:1rem; background:transparent; border:1px solid var(--yellow); color:var(--yellow);
+    padding:0.7rem 1.4rem; font-family:'IBM Plex Mono'; font-size:0.8rem; cursor:pointer; border-radius:2px;
+  }
+
+  /* GUESTBOOK */
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:2px; padding:1.75rem;}
+  .card h3{font-size:1.15rem; margin-bottom:0.3rem;}
+  .card .hint{color:var(--text-dim); font-size:0.85rem; margin-bottom:1.2rem;}
+  .mini-form{display:flex; gap:0.5rem; margin-bottom:1rem;}
+  .mini-form input{flex:1;}
+  .mini-form button{background:transparent; border:1px solid var(--yellow); color:var(--yellow); padding:0 1rem; font-family:'IBM Plex Mono'; font-size:0.78rem; cursor:pointer; border-radius:2px;}
+  .mini-list{display:flex; flex-direction:column; gap:0.6rem; font-size:0.88rem;}
+  .mini-list li{list-style:none; border-bottom:1px solid var(--line); padding-bottom:0.6rem; color:var(--text-dim);}
+  .mini-list li span{color:var(--yellow); font-family:'IBM Plex Mono'; font-size:0.75rem; margin-right:0.5rem;}
+
+  .stats-grid{display:flex; flex-direction:column; gap:0.9rem;}
+  .stat-row{display:flex; justify-content:space-between; align-items:baseline; border-bottom:1px solid var(--line); padding-bottom:0.75rem; font-size:0.95rem;}
+  .stat-val{color:var(--yellow);}
+  .stat-val em{color:var(--text-dim); font-style:normal; font-size:0.8rem;}
+
+  footer{text-align:center; padding:3rem 1.5rem 4rem; color:var(--text-dim); font-size:0.8rem; font-family:'IBM Plex Mono';}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div id="boot" class="mono"></div>
+    <h1>Drei Jahre <span class="hl">eingeloggt.</span><br>Jetzt wird<br>ausgecheckt.</h1>
+    <p class="sub">Am 29. September verlasse ich die Raiffeisenbank Rigi. Davor gibt's ein Apéro, ein paar Erinnerungen und die Chance, mich in einem kleinen Quiz zu schlagen. Logout erfolgreich, Impact bleibt.</p>
+    <div class="meta-row">
+      <div class="meta-item"><div class="label">Datum</div><div class="value mono">Di, 29.09.2026, 17:15 Uhr</div></div>
+      <div class="meta-item"><div class="label">Ort</div><div class="value mono">Geschäftsstelle Goldau</div></div>
+      <div class="meta-item"><div class="label">Countdown</div><div class="value" id="countdown">–</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="timeline">
+  <span class="eyebrow">Logbuch</span>
+  <div class="log-head"><span>Session · Juli 2023 – September 2026</span></div>
+
+  <div class="entry"><div class="idx">LOG_01</div><div class="desc"><h3>Login</h3><p>Start bei der Raiffeisenbank Rigi als Marketing Managerin.</p></div></div>
+  <div class="entry"><div class="idx">LOG_02</div><div class="desc"><h3>Dienstreise Dublin</h3><p>Gemeinsam in Dublin gewesen. Mega cool.</p></div></div>
+  <div class="entry"><div class="idx">LOG_03</div><div class="desc"><h3>Zombiejagd, VR-Teamevent</h3><p>Management Office auf Zombiejagd geschickt. Überlebt.</p></div></div>
+  <div class="entry"><div class="idx">LOG_04</div><div class="desc"><h3>125 Jahre Raiffeisen</h3><p>Jubiläum gefeiert und dafür richtig Werbung gemacht.</p></div></div>
+  <div class="entry"><div class="idx">LOG_05</div><div class="desc"><h3>Vereinsbatzä lanciert</h3><p>Ins Leben gerufen, seither im Einsatz.</p></div></div>
+  <div class="entry"><div class="idx">LOG_06</div><div class="desc"><h3>Neue Team-Fotos</h3><p>Alle Mitarbeitenden neu fotografiert.</p></div></div>
+  <div class="entry final"><div class="idx">LOG_07</div><div class="desc"><h3>Logout</h3><p>Abschied nach drei Jahren.</p></div></div>
+</section>
+
+<section id="stats">
+  <span class="eyebrow">Session Stats</span>
+  <div class="card">
+    <div class="stats-grid">
+      <div class="stat-row"><span>Session Duration</span><span class="mono stat-val">ca. 3 Jahre</span></div>
+      <div class="stat-row"><span>Kampagnen umgesetzt</span><span class="mono stat-val">?? <em>TBD</em></span></div>
+      <div class="stat-row"><span>Events organisiert</span><span class="mono stat-val">?? <em>TBD</em></span></div>
+      <div class="stat-row"><span>Mitarbeitende fotografiert</span><span class="mono stat-val">?? <em>TBD</em></span></div>
+      <div class="stat-row"><span>Neu lancierte Formate</span><span class="mono stat-val">1 <em>(Vereinsbatzä)</em></span></div>
+      <div class="stat-row"><span>"Chasch no schnell..."-Anfragen</span><span class="mono stat-val">∞</span></div>
+    </div>
+    <p class="hint" style="margin-top:1.25rem;">Zahlen mit "TBD" sind Platzhalter, echte Werte trägst du noch ein.</p>
+  </div>
+</section>
+
+<section id="farewell">
+  <p style="color:var(--text-dim); margin-bottom:1.25rem;">Ich gehe mit vielen guten Erinnerungen, spannenden Projekten und Menschen, die meinen Arbeitsalltag besonders gemacht haben. Danke an alle, die Ideen möglich gemacht, mitgedacht, mitgelacht und auch die eine oder andere kurzfristige Deadline überlebt haben.</p>
+  <p style="color:var(--text);">Und weil ein normaler Abschied nicht ganz zu mir gepasst hätte, gibt es eben eine Website dafür.</p>
+</section>
+
+<section id="rsvp">
+  <div class="rsvp-box">
+    <h2>Anmeldung</h2>
+    <span class="deadline">Anmeldeschluss: 22.09.2026</span>
+    <form id="rsvp-form">
+      <div><label for="name">Name</label><input type="text" id="name" required></div>
+      <div><label for="email">E-Mail</label><input type="email" id="email" required></div>
+      <div><label for="diet">Allergien / Ernährung</label><input type="text" id="diet" placeholder="z.B. vegetarisch, glutenfrei, keine"></div>
+      <div><label for="note">Nachricht an Anja (optional)</label><textarea id="note" rows="2"></textarea></div>
+      <button type="submit" class="submit">Anmelden</button>
+    </form>
+    <p class="rsvp-note">Anmeldungen werden aktuell noch nicht gespeichert, das braucht eine kurze Backend-Anbindung.</p>
+  </div>
+</section>
+
+<section id="concierge">
+  <span class="eyebrow">Live-System</span>
+  <h2 style="margin-bottom:1.25rem;">Was möchtest du über mich wissen?</h2>
+  <div class="concierge">
+    <div class="concierge-head"><span class="dot"></span><span class="mono" style="font-size:0.8rem; color:var(--text-dim);">stellt Fragen an Anja, live beantwortet</span></div>
+    <div id="chat-log"><div class="msg bot">Hoi! Frag mich, was du schon immer über mich wissen wolltest, oder auch Fragen zum Apéro. Ich antworte ehrlich, ausser du wirst zu neugierig.</div></div>
+    <div class="chat-input-row">
+      <input type="text" id="chat-input" placeholder="z.B. Was hast du hier eigentlich gemacht?">
+      <button id="chat-send">Senden</button>
+    </div>
+  </div>
+</section>
+
+<section id="game">
+  <span class="eyebrow">Optional detour</span>
+  <h2 style="margin-bottom:1.5rem;">Wie gut kennst du Anja?</h2>
+  <div class="game-box">
+    <div id="quiz-progress">Frage 1 / 6</div>
+    <div id="quiz-question"></div>
+    <div class="quiz-options" id="quiz-options"></div>
+    <div id="quiz-result">
+      <p class="mono" style="color:var(--text-dim); font-size:0.8rem;">ERGEBNIS</p>
+      <div class="score" id="quiz-score"></div>
+      <p id="quiz-comment" style="color:var(--text-dim);"></p>
+      <button id="quiz-restart">Nochmal</button>
+    </div>
+  </div>
+</section>
+
+<section id="guestbook">
+  <div class="card">
+    <h3>Gästebuch</h3>
+    <p class="hint">Eine Erinnerung oder ein Satz zum Abschied.</p>
+    <div class="mini-form"><input type="text" id="gb-input" placeholder="Deine Nachricht"><button id="gb-add">+</button></div>
+    <ul class="mini-list" id="gb-list"></ul>
+  </div>
+</section>
+
+<footer>abschied.anja-renggli.ch</footer>
+
+<script>
+// Boot text typewriter
+const bootText = "SYSTEM: RAIFFEISENBANK_RIGI // STATUS: ABSCHIEDS_PROTOKOLL_AKTIV";
+let bi = 0;
+const bootEl = document.getElementById('boot');
+function typeBoot(){ if(bi <= bootText.length){ bootEl.textContent = bootText.slice(0, bi); bi++; setTimeout(typeBoot, 22);} }
+typeBoot();
+
+// Countdown
+const target = new Date("2026-09-29T17:15:00");
+function updateCountdown(){
+  const diff = target - new Date();
+  if(diff <= 0){ document.getElementById('countdown').textContent = "Heute!"; return; }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  document.getElementById('countdown').textContent = `${d} Tage, ${h} Std.`;
+}
+updateCountdown(); setInterval(updateCountdown, 60000);
+
+// RSVP
+document.getElementById('rsvp-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  alert("Danke! (Demo-Modus: noch nicht gespeichert, Backend folgt.)");
+  this.reset();
+});
+
+// Guestbook
+document.getElementById('gb-add').addEventListener('click', () => {
+  const input = document.getElementById('gb-input');
+  const val = input.value.trim();
+  if(!val) return;
+  const li = document.createElement('li');
+  li.innerHTML = `<span>—</span>${val}`;
+  document.getElementById('gb-list').prepend(li);
+  input.value = '';
+});
+
+// AI Concierge
+const chatLog = document.getElementById('chat-log');
+const chatInput = document.getElementById('chat-input');
+const chatSend = document.getElementById('chat-send');
+// System-Prompt liegt jetzt serverseitig in api/chat.js, nicht mehr hier im Frontend
+async function sendMessage(){
+  const text = chatInput.value.trim();
+  if(!text) return;
+  addMsg(text, 'user'); chatInput.value = '';
+  const thinking = addMsg('...', 'bot');
+  try{
+    const response = await fetch("/api/chat", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ message: text })
+    });
+    const data = await response.json();
+    thinking.textContent = data.reply || "Sorry, da ist etwas schiefgelaufen.";
+  }catch(err){ thinking.textContent = "Verbindung hat gerade nicht geklappt, versuch's nochmal."; }
+}
+function addMsg(text, cls){
+  const div = document.createElement('div'); div.className = 'msg ' + cls; div.textContent = text;
+  chatLog.appendChild(div); chatLog.scrollTop = chatLog.scrollHeight; return div;
+}
+chatSend.addEventListener('click', sendMessage);
+chatInput.addEventListener('keydown', e => { if(e.key === 'Enter') sendMessage(); });
+
+// Quiz game
+const questions = [
+  { q: "Was war eines der ersten Projekte von Anja bei der Raiffeisenbank Rigi?", options: ["Debitkartenkampagne", "Zamboni", "Newsletter", "Fotos Geschäftsstelle"], a: 1 },
+  { q: "In welchem Jahr hat Anja ihre eigene Agentur at creation GmbH gegründet?", options: ["2018", "2012", "2015", "2020"], a: 2 },
+  { q: "Welche Position spielt Anja im Volleyball?", options: ["Aussen", "Bänkliwärmer", "Libera", "Pass"], a: 3 },
+  { q: "Wie oft ungefähr hörte Anja 'Chasch no schnell...'?", options: ["Selten", "Gelegentlich", "Täglich", "Diese Frage ist unrealistisch"], a: 3 }
+];
+let qi = 0, score = 0;
+const qEl = document.getElementById('quiz-question');
+const oEl = document.getElementById('quiz-options');
+const pEl = document.getElementById('quiz-progress');
+const resultEl = document.getElementById('quiz-result');
+const gameBoxTop = document.getElementById('quiz-progress');
+
+function renderQuestion(){
+  const item = questions[qi];
+  pEl.textContent = `Frage ${qi+1} / ${questions.length}`;
+  qEl.textContent = item.q;
+  oEl.innerHTML = '';
+  resultEl.style.display = 'none';
+  qEl.style.display = 'block'; oEl.style.display = 'flex';
+  item.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt'; btn.textContent = opt;
+    btn.addEventListener('click', () => selectAnswer(i, btn));
+    oEl.appendChild(btn);
+  });
+}
+function selectAnswer(i, btn){
+  const item = questions[qi];
+  [...oEl.children].forEach(c => c.disabled = true);
+  if(i === item.a){ btn.classList.add('correct'); score++; }
+  else{ btn.classList.add('wrong'); oEl.children[item.a].classList.add('correct'); }
+  setTimeout(() => {
+    qi++;
+    if(qi < questions.length){ renderQuestion(); } else { showResult(); }
+  }, 900);
+}
+function showResult(){
+  qEl.style.display = 'none'; oEl.style.display = 'none';
+  pEl.textContent = 'Fertig';
+  resultEl.style.display = 'block';
+  document.getElementById('quiz-score').textContent = `${score} / ${questions.length}`;
+  const comments = {
+    4: "Perfekt. Hast du heimlich meine Chats gelesen?",
+    3: "Solide, wir hatten definitiv mal einen Kaffee zusammen.",
+    2: "Geht so. Zeit für ein Gespräch beim Apéro.",
+    1: "Ausbaufähig, aber du bist ja hier.",
+    0: "Nun ja. Umso mehr Grund, am 29.9. vorbeizukommen."
+  };
+  document.getElementById('quiz-comment').textContent = comments[score];
+}
+document.getElementById('quiz-restart').addEventListener('click', () => { qi = 0; score = 0; renderQuestion(); });
+renderQuestion();
+</script>
+
+</body>
+</html>
