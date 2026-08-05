@@ -47,12 +47,16 @@ function renderPage({ rsvps, chatLogs, guestbook }) {
       <td class="mono dim">${fmtDate(r.created_at)}</td>
     </tr>`).join('') || `<tr><td colspan="4" class="dim">Noch keine Einträge.</td></tr>`;
 
-  const chatRows = chatLogs.map((c) => `
-    <div class="chat-entry">
+  const CHAT_PAGE_SIZE = 4;
+  const chatRows = chatLogs.map((c, i) => `
+    <div class="chat-entry${i >= CHAT_PAGE_SIZE ? ' hidden' : ''}">
       <div class="chat-meta mono dim">${fmtDate(c.created_at)}</div>
       <div class="chat-msg"><span class="tag">Frage</span>${escapeHtml(c.message)}</div>
       <div class="chat-reply"><span class="tag tag-yellow">Antwort</span>${escapeHtml(c.reply)}</div>
     </div>`).join('') || `<p class="dim">Noch keine Chatverläufe.</p>`;
+  const chatMoreBtn = chatLogs.length > CHAT_PAGE_SIZE
+    ? `<button id="chat-more-btn" class="load-more">Mehr laden</button>`
+    : '';
 
   const gbRows = guestbook.map((g) => `
     <tr><td>${escapeHtml(g.message)}</td><td class="mono dim">${fmtDate(g.created_at)}</td></tr>
@@ -85,6 +89,9 @@ function renderPage({ rsvps, chatLogs, guestbook }) {
   .tag{display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-dim); border:1px solid var(--line); border-radius:3px; padding:0.1rem 0.4rem; margin-right:0.5rem;}
   .tag-yellow{color:var(--yellow); border-color:var(--yellow);}
   a.reload{color:var(--yellow); font-family:'IBM Plex Mono',monospace; font-size:0.8rem; text-decoration:none;}
+  .chat-entry.hidden{display:none;}
+  button.load-more{margin-top:0.75rem; background:transparent; border:1px solid var(--yellow); color:var(--yellow); padding:0.55rem 1.2rem; font-family:'IBM Plex Mono',monospace; font-size:0.78rem; cursor:pointer; border-radius:3px;}
+  button.load-more:hover{background:rgba(255,212,0,0.08);}
 </style>
 </head>
 <body>
@@ -108,7 +115,7 @@ function renderPage({ rsvps, chatLogs, guestbook }) {
   </div>
 
   <h2>Chatverläufe <span class="count">(${chatLogs.length})</span></h2>
-  <div class="card">${chatRows}</div>
+  <div class="card" id="chat-log-list">${chatRows}${chatMoreBtn}</div>
 
   <h2>Gästebuch <span class="count">(${guestbook.length})</span></h2>
   <div class="card">
@@ -117,6 +124,21 @@ function renderPage({ rsvps, chatLogs, guestbook }) {
       <tbody>${gbRows}</tbody>
     </table>
   </div>
+
+  <script>
+    var moreBtn = document.getElementById('chat-more-btn');
+    if (moreBtn) {
+      moreBtn.addEventListener('click', function () {
+        var hidden = document.querySelectorAll('#chat-log-list .chat-entry.hidden');
+        for (var i = 0; i < Math.min(${CHAT_PAGE_SIZE}, hidden.length); i++) {
+          hidden[i].classList.remove('hidden');
+        }
+        if (document.querySelectorAll('#chat-log-list .chat-entry.hidden').length === 0) {
+          moreBtn.style.display = 'none';
+        }
+      });
+    }
+  </script>
 </body>
 </html>`;
 }
