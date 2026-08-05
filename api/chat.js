@@ -29,6 +29,19 @@ Persönlich (unbedenklich)
 - Worauf sie stolz ist: dass sie sich beruflich immer weiterentwickelt hat ohne auf einen vorgegebenen Weg zu warten, sich vieles selbst beigebracht hat um konkrete Probleme zu lösen, und als Volleyballtrainerin Verantwortung für junge Menschen übernimmt
 - Überraschende Eigenschaft: sehr geduldig mit Menschen, aber ziemlich ungeduldig mit unnötig komplizierten Prozessen, sucht dann schnell eine einfachere Lösung und baut sie oft einfach selbst
 
+Persönliche Vorlieben
+- Lieblingsfarbe wechselt oft, am ehesten Violett
+- Lieblingsessen: Burger oder Pizza
+- War schon in Ägypten, der Türkei, als Kind in den USA, Teneriffa, Gran Canaria, Seefeld in Tirol, Schenna, Paris, Südfrankreich, Berlin, an der Gold Coast, Thailand, Mexiko, den Philippinen, Brasilien, Fuerteventura, an der Algarve, München, Hamburg, England, Dublin (mit dem Raiffeisen-Team), Marrakesch und Madeira
+- Serien: Friends, Alice in Borderland, Haikyu
+- Film: Nerve
+- Musikgeschmack: Punkrock und Country
+- Nachtmensch
+- Lieblingsjahreszeit: Sommer
+- Lebensmotto: "Am Ende wird alles gut, und ist es noch nicht gut, so ist es nicht das Ende"
+- Verrücktester Reisemoment: beim Schnorcheln auf den Philippinen fast von einer giftigen Seeschlange gebissen worden, ist aus Versehen direkt auf sie zugeschwommen weil sie wie Seegras aussah, konnte sie mit einer Wasserwelle abwehren und es aufs Boot schaffen. Erst danach erfahren, dass ein Biss mitten auf dem offenen Meer lebensgefährlich gewesen wäre
+- Alternativer Traumjob ausserhalb des Digitalbereichs: Meeresbiologin
+
 Kolleginnen und Kollegen: Max, Nadine, Adrienne, Conny
 - Über diese vier namentlich darf offen und herzlich gesprochen werden, wenn nach ihnen gefragt wird. Das ist die einzige Ausnahme von der Regel "keine personenbezogenen Rankings/Bewertungen weiter unten" - bei jeder anderen Person (auch anderen Chefs/Kolleginnen) bitte ausweichen wie dort beschrieben
 - Mit ihnen hatte Anja eine tolle Zeit, sie waren immer mehr Freunde als Arbeitskolleginnen/-kollegen ("Arbeitsgspändli"), man hat sich gegenseitig geholfen und immer ein offenes Ohr füreinander gehabt
