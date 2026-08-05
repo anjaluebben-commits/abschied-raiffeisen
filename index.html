@@ -348,6 +348,39 @@ const navObserver = new IntersectionObserver((entries) => {
 }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
 navSections.forEach(s => navObserver.observe(s));
 
+// Bg-Trace-Punkte: bei Klick kurz zum Klickpunkt versammeln, dann wieder verteilen
+const traceDots = document.querySelectorAll('.bg-trace');
+document.addEventListener('click', (e) => {
+  traceDots.forEach((dot) => {
+    const rect = dot.getBoundingClientRect();
+    dot.style.transition = 'none';
+    dot.style.animation = 'none';
+    dot.style.offsetPath = 'none';
+    dot.style.left = rect.left + 'px';
+    dot.style.top = rect.top + 'px';
+    dot.getBoundingClientRect(); // reflow, damit der Sprung zur Startposition nicht animiert wird
+    dot.style.transition = 'left 0.35s ease-out, top 0.35s ease-out, opacity 0.3s ease';
+    requestAnimationFrame(() => {
+      dot.style.left = (e.clientX - 3.5) + 'px';
+      dot.style.top = (e.clientY - 3.5) + 'px';
+    });
+    setTimeout(() => { dot.style.opacity = '0'; }, 380);
+    setTimeout(() => {
+      dot.style.transition = 'none';
+      dot.style.opacity = '';
+      dot.style.left = '';
+      dot.style.top = '';
+      dot.style.animation = '';
+      dot.style.offsetPath = '';
+      dot.getBoundingClientRect(); // reflow, damit die Loop-Animation sauber neu startet
+      requestAnimationFrame(() => {
+        dot.style.transition = 'opacity 0.4s ease';
+        dot.style.opacity = '1';
+      });
+    }, 680);
+  });
+});
+
 // Boot text typewriter
 const bootText = "SYSTEM: RAIFFEISENBANK_RIGI // STATUS: ABSCHIEDS_PROTOKOLL_AKTIV";
 let bi = 0;
