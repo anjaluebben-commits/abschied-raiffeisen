@@ -134,6 +134,7 @@
   #chat-input{flex:1; background:transparent; border:none; color:var(--text); padding:1rem; font-family:'Inter'; font-size:0.9rem;}
   #chat-input:focus{outline:none;}
   #chat-send{background:transparent; border:none; color:var(--yellow); font-family:'IBM Plex Mono'; font-size:0.8rem; padding:0 1.5rem; cursor:pointer; text-transform:uppercase; letter-spacing:0.06em;}
+  .chat-disclaimer{font-size:0.78rem; color:var(--text-dim); margin-top:0.9rem;}
 
   /* GAME */
   .game-box{background:var(--panel); border:1px solid var(--line); border-radius:2px; padding:2rem;}
@@ -280,13 +281,14 @@
   <span class="eyebrow">Live-System</span>
   <h2 style="margin-bottom:1.25rem;">Was möchtest du über mich wissen?</h2>
   <div class="concierge">
-    <div class="concierge-head"><span class="dot"></span><span class="mono" style="font-size:0.8rem; color:var(--text-dim);">stellt Fragen an Anja, live beantwortet</span></div>
+    <div class="concierge-head"><span class="dot"></span><span class="mono" style="font-size:0.8rem; color:var(--text-dim);">Anjas KI-Zwilling · antwortet automatisch, nicht Anja persönlich</span></div>
     <div id="chat-log"><div class="msg bot">Hoi! Frag mich, was du schon immer über mich wissen wolltest, oder auch Fragen zum Apéro. Ich antworte ehrlich, ausser du wirst zu neugierig.</div></div>
     <div class="chat-input-row">
       <input type="text" id="chat-input" placeholder="z.B. Was hast du hier eigentlich gemacht?">
       <button id="chat-send">Senden</button>
     </div>
   </div>
+  <p class="chat-disclaimer">KI kann Fehler machen – wenn du sicher sein möchtest, musst du Anja selbst fragen.</p>
 </section>
 
 <section id="game">
@@ -435,6 +437,7 @@ const chatLog = document.getElementById('chat-log');
 const chatInput = document.getElementById('chat-input');
 const chatSend = document.getElementById('chat-send');
 // System-Prompt liegt jetzt serverseitig in api/chat.js, nicht mehr hier im Frontend
+let chatHistory = []; // {role:'user'|'assistant', content: string}, für Folgefragen im selben Besuch
 async function sendMessage(){
   const text = chatInput.value.trim();
   if(!text) return;
@@ -443,10 +446,13 @@ async function sendMessage(){
   try{
     const response = await fetch("/api/chat", {
       method: "POST", headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ message: text })
+      body: JSON.stringify({ message: text, history: chatHistory })
     });
     const data = await response.json();
-    thinking.textContent = data.reply || "Sorry, da ist etwas schiefgelaufen.";
+    const reply = data.reply || "Sorry, da ist etwas schiefgelaufen.";
+    thinking.textContent = reply;
+    chatHistory.push({ role: 'user', content: text }, { role: 'assistant', content: reply });
+    if(chatHistory.length > 20) chatHistory = chatHistory.slice(-20); // Verlauf begrenzen
   }catch(err){ thinking.textContent = "Verbindung hat gerade nicht geklappt, versuch's nochmal."; }
 }
 function addMsg(text, cls){

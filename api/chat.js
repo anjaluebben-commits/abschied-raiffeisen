@@ -106,10 +106,20 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { message } = req.body || {};
+  const { message, history } = req.body || {};
   if (!message || typeof message !== 'string' || message.length > 500) {
     return res.status(400).json({ error: 'Invalid message' });
   }
+
+  // Verlauf validieren und begrenzen, damit niemand beliebig lange/viele Nachrichten unterschieben kann
+  const safeHistory = Array.isArray(history)
+    ? history
+        .filter((m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string' && m.content.length <= 1000)
+        .slice(-20)
+        .map((m) => ({ role: m.role, content: m.content }))
+    : [];
+
+  const messages = [...safeHistory, { role: 'user', content: message }];
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -123,7 +133,7 @@ export default async function handler(req, res) {
         model: 'claude-sonnet-4-6',
         max_tokens: 300,
         system: SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: message }]
+        messages
       })
     });
 
