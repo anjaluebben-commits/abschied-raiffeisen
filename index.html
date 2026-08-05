@@ -51,6 +51,8 @@
     offset-rotate:0deg;
     animation:traceMove 24s linear infinite, traceGlow 2.2s ease-in-out infinite alternate;
   }
+  .bg-trace:nth-of-type(2){animation-delay:-8s, -0.7s;}
+  .bg-trace:nth-of-type(3){animation-delay:-16s, -1.4s;}
   @keyframes traceMove{from{offset-distance:0%;} to{offset-distance:100%;}}
   @keyframes traceGlow{0%{opacity:0.55;} 100%{opacity:1;}}
   @media (max-width:600px){
@@ -232,6 +234,8 @@
 </head>
 <body>
 
+<div class="bg-trace" aria-hidden="true"></div>
+<div class="bg-trace" aria-hidden="true"></div>
 <div class="bg-trace" aria-hidden="true"></div>
 
 <nav id="appnav" aria-label="Hauptnavigation">
