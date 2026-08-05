@@ -43,22 +43,14 @@
   @keyframes bgPulse{0%{opacity:0.45;} 100%{opacity:1;}}
   @media (prefers-reduced-motion: reduce){ body::before{animation:none; opacity:0.7;} }
 
-  /* Leuchtender Punkt, der dem Grid entlangfährt */
+  /* Leuchtender Punkt, der dem Grid entlangfährt (Route/Animation wird per JS gesetzt, viewport-abhängig) */
   .bg-trace{
     position:fixed; top:0; left:0; z-index:-1; pointer-events:none;
     width:7px; height:7px; border-radius:50%; background:var(--yellow);
     box-shadow:0 0 6px 2px var(--yellow), 0 0 20px 6px rgba(var(--yellow-rgb),0.4);
-    offset-path: path("M 42,84 L 462,84 L 462,336 L 210,336 L 210,504 L 714,504 L 714,168 L 42,168 Z");
-    offset-rotate:0deg;
-    animation:traceMove 24s linear infinite, traceGlow 2.2s ease-in-out infinite alternate;
   }
-  .bg-trace:nth-of-type(2){animation-delay:-8s, -0.7s;}
-  .bg-trace:nth-of-type(3){animation-delay:-16s, -1.4s;}
   @keyframes traceMove{from{offset-distance:0%;} to{offset-distance:100%;}}
   @keyframes traceGlow{0%{opacity:0.55;} 100%{opacity:1;}}
-  @media (max-width:600px){
-    .bg-trace{ offset-path: path("M 42,84 L 252,84 L 252,252 L 126,252 L 126,378 L 336,378 L 336,168 L 42,168 Z"); }
-  }
   @media (prefers-reduced-motion: reduce){ .bg-trace{display:none;} }
 
   /* Farbwechsler */
@@ -390,10 +382,84 @@ colorBtn.addEventListener('click', () => {
   }
 });
 
-// Bg-Trace-Punkte: bei Klick kurz zum Klickpunkt versammeln, dann wieder verteilen
-const traceDots = document.querySelectorAll('.bg-trace');
+// Bg-Trace-Punkte: Route über den ganzen Bildschirm, bei Klick versammeln sie
+// sich dort kurz und schwirren von genau dieser Stelle wieder los.
+const TRACE_DURATION = 34; // Sekunden pro Umlauf, "etwas langsamer"
+const traceDots = [...document.querySelectorAll('.bg-trace')];
+let tracePoints = [];
+let traceClosed = [];
+let traceCumLengths = [];
+let traceTotalLength = 0;
+
+function snap42(v){ return Math.max(42, Math.round(v / 42) * 42); }
+
+function buildTracePoints(){
+  const w = window.innerWidth, h = window.innerHeight;
+  return [
+    [84, snap42(h * 0.16)],
+    [snap42(w * 0.78), snap42(h * 0.16)],
+    [snap42(w * 0.78), snap42(h * 0.52)],
+    [snap42(w * 0.32), snap42(h * 0.52)],
+    [snap42(w * 0.32), snap42(h * 0.84)],
+    [snap42(w * 0.92), snap42(h * 0.84)],
+    [snap42(w * 0.92), snap42(h * 0.28)],
+    [84, snap42(h * 0.28)]
+  ];
+}
+function tracePathString(pts){
+  return 'path("M ' + pts.map(p => p.join(',')).join(' L ') + ' Z")';
+}
+function setTraceAnimation(dot, startPercent, glowDelay){
+  dot.style.animationName = 'traceMove, traceGlow';
+  dot.style.animationDuration = `${TRACE_DURATION}s, 2.2s`;
+  dot.style.animationTimingFunction = 'linear, ease-in-out';
+  dot.style.animationIterationCount = 'infinite, infinite';
+  dot.style.animationDirection = 'normal, alternate';
+  dot.style.animationDelay = `${-(startPercent / 100 * TRACE_DURATION)}s, ${glowDelay ?? 0}s`;
+}
+function applyTracePaths(){
+  tracePoints = buildTracePoints();
+  traceClosed = [...tracePoints, tracePoints[0]];
+  traceCumLengths = [0];
+  traceTotalLength = 0;
+  for(let i = 0; i < traceClosed.length - 1; i++){
+    traceTotalLength += Math.hypot(traceClosed[i+1][0]-traceClosed[i][0], traceClosed[i+1][1]-traceClosed[i][1]);
+    traceCumLengths.push(traceTotalLength);
+  }
+  const pStr = tracePathString(tracePoints);
+  traceDots.forEach((dot, i) => {
+    dot.style.offsetPath = pStr;
+    dot.style.offsetRotate = '0deg';
+    if(!dot.dataset.customized){
+      setTraceAnimation(dot, (i / traceDots.length) * 100, -(i * 0.7));
+    }
+  });
+}
+function nearestOffsetPercent(x, y){
+  let bestDist = Infinity, bestLen = 0;
+  for(let i = 0; i < traceClosed.length - 1; i++){
+    const [x1, y1] = traceClosed[i], [x2, y2] = traceClosed[i+1];
+    const dx = x2 - x1, dy = y2 - y1;
+    const segLen2 = dx*dx + dy*dy || 1;
+    let t = ((x - x1) * dx + (y - y1) * dy) / segLen2;
+    t = Math.max(0, Math.min(1, t));
+    const px = x1 + t * dx, py = y1 + t * dy;
+    const dist = Math.hypot(x - px, y - py);
+    if(dist < bestDist){ bestDist = dist; bestLen = traceCumLengths[i] + t * Math.sqrt(segLen2); }
+  }
+  return traceTotalLength ? (bestLen / traceTotalLength) * 100 : 0;
+}
+applyTracePaths();
+let traceResizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(traceResizeTimer);
+  traceResizeTimer = setTimeout(applyTracePaths, 250);
+});
+
 document.addEventListener('click', (e) => {
-  traceDots.forEach((dot) => {
+  const pStr = tracePathString(tracePoints);
+  const landingPercent = nearestOffsetPercent(e.clientX, e.clientY);
+  traceDots.forEach((dot, idx) => {
     const rect = dot.getBoundingClientRect();
     dot.style.transition = 'none';
     dot.style.animation = 'none';
@@ -401,25 +467,21 @@ document.addEventListener('click', (e) => {
     dot.style.left = rect.left + 'px';
     dot.style.top = rect.top + 'px';
     dot.getBoundingClientRect(); // reflow, damit der Sprung zur Startposition nicht animiert wird
-    dot.style.transition = 'left 0.35s ease-out, top 0.35s ease-out, opacity 0.3s ease';
+    dot.style.transition = 'left 0.35s ease-out, top 0.35s ease-out';
     requestAnimationFrame(() => {
       dot.style.left = (e.clientX - 3.5) + 'px';
       dot.style.top = (e.clientY - 3.5) + 'px';
     });
-    setTimeout(() => { dot.style.opacity = '0'; }, 380);
     setTimeout(() => {
+      // Von der Klickstelle direkt wieder auf die Route einschwenken und dort weiterfahren
       dot.style.transition = 'none';
-      dot.style.opacity = '';
       dot.style.left = '';
       dot.style.top = '';
-      dot.style.animation = '';
-      dot.style.offsetPath = '';
-      dot.getBoundingClientRect(); // reflow, damit die Loop-Animation sauber neu startet
-      requestAnimationFrame(() => {
-        dot.style.transition = 'opacity 0.4s ease';
-        dot.style.opacity = '1';
-      });
-    }, 680);
+      dot.style.offsetPath = pStr;
+      dot.style.offsetRotate = '0deg';
+      dot.dataset.customized = 'true';
+      setTraceAnimation(dot, (landingPercent + idx * 3) % 100, -(idx * 0.7));
+    }, 380);
   });
 });
 
