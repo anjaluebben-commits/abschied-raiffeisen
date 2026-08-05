@@ -383,71 +383,82 @@ colorBtn.addEventListener('click', () => {
 });
 
 // Bg-Trace-Punkte: Route über den ganzen Bildschirm, bei Klick versammeln sie
-// sich dort kurz und schwirren von genau dieser Stelle wieder los.
-const TRACE_DURATION = 34; // Sekunden pro Umlauf, "etwas langsamer"
+// sich dort kurz und schwirren danach zufällig verteilt wieder los, jeder auf
+// seiner eigenen Route statt hintereinander auf dem gleichen Weg.
 const traceDots = [...document.querySelectorAll('.bg-trace')];
-let tracePoints = [];
-let traceClosed = [];
-let traceCumLengths = [];
-let traceTotalLength = 0;
 
 function snap42(v){ return Math.max(42, Math.round(v / 42) * 42); }
+function rand(min, max){ return min + Math.random() * (max - min); }
 
-function buildTracePoints(){
-  const w = window.innerWidth, h = window.innerHeight;
+// Jeder Punkt bekommt einmalig eine eigene, zufällige Routen-Form + Tempo
+const dotState = traceDots.map(() => ({
+  shape: {
+    xA: rand(0.06, 0.22), xB: rand(0.55, 0.92),
+    yA: rand(0.08, 0.24), yB: rand(0.55, 0.9),
+    xMid: rand(0.25, 0.6), yMid: rand(0.3, 0.65)
+  },
+  duration: rand(28, 42),
+  points: [], closed: [], cum: [], total: 0
+}));
+
+function buildPointsFromShape(w, h, s){
+  const xOuter = snap42(w * Math.min(0.96, s.xB + 0.08));
+  const yOuter = snap42(h * Math.min(0.92, s.yA + 0.08));
   return [
-    [84, snap42(h * 0.16)],
-    [snap42(w * 0.78), snap42(h * 0.16)],
-    [snap42(w * 0.78), snap42(h * 0.52)],
-    [snap42(w * 0.32), snap42(h * 0.52)],
-    [snap42(w * 0.32), snap42(h * 0.84)],
-    [snap42(w * 0.92), snap42(h * 0.84)],
-    [snap42(w * 0.92), snap42(h * 0.28)],
-    [84, snap42(h * 0.28)]
+    [snap42(w * s.xA), snap42(h * s.yA)],
+    [snap42(w * s.xB), snap42(h * s.yA)],
+    [snap42(w * s.xB), snap42(h * s.yMid)],
+    [snap42(w * s.xMid), snap42(h * s.yMid)],
+    [snap42(w * s.xMid), snap42(h * s.yB)],
+    [xOuter, snap42(h * s.yB)],
+    [xOuter, yOuter],
+    [snap42(w * s.xA), yOuter]
   ];
 }
-function tracePathString(pts){
+function pathStringFromPoints(pts){
   return 'path("M ' + pts.map(p => p.join(',')).join(' L ') + ' Z")';
 }
-function setTraceAnimation(dot, startPercent, glowDelay){
+function setTraceAnimation(dot, startPercent, glowDelay, duration){
   dot.style.animationName = 'traceMove, traceGlow';
-  dot.style.animationDuration = `${TRACE_DURATION}s, 2.2s`;
+  dot.style.animationDuration = `${duration}s, 2.2s`;
   dot.style.animationTimingFunction = 'linear, ease-in-out';
   dot.style.animationIterationCount = 'infinite, infinite';
   dot.style.animationDirection = 'normal, alternate';
-  dot.style.animationDelay = `${-(startPercent / 100 * TRACE_DURATION)}s, ${glowDelay ?? 0}s`;
+  dot.style.animationDelay = `${-(startPercent / 100 * duration)}s, ${glowDelay ?? 0}s`;
 }
 function applyTracePaths(){
-  tracePoints = buildTracePoints();
-  traceClosed = [...tracePoints, tracePoints[0]];
-  traceCumLengths = [0];
-  traceTotalLength = 0;
-  for(let i = 0; i < traceClosed.length - 1; i++){
-    traceTotalLength += Math.hypot(traceClosed[i+1][0]-traceClosed[i][0], traceClosed[i+1][1]-traceClosed[i][1]);
-    traceCumLengths.push(traceTotalLength);
-  }
-  const pStr = tracePathString(tracePoints);
+  const w = window.innerWidth, h = window.innerHeight;
   traceDots.forEach((dot, i) => {
-    dot.style.offsetPath = pStr;
+    const state = dotState[i];
+    state.points = buildPointsFromShape(w, h, state.shape);
+    const closed = [...state.points, state.points[0]];
+    const cum = [0];
+    let total = 0;
+    for(let j = 0; j < closed.length - 1; j++){
+      total += Math.hypot(closed[j+1][0]-closed[j][0], closed[j+1][1]-closed[j][1]);
+      cum.push(total);
+    }
+    state.closed = closed; state.cum = cum; state.total = total;
+    dot.style.offsetPath = pathStringFromPoints(state.points);
     dot.style.offsetRotate = '0deg';
     if(!dot.dataset.customized){
-      setTraceAnimation(dot, (i / traceDots.length) * 100, -(i * 0.7));
+      setTraceAnimation(dot, rand(0, 100), -(i * 0.7), state.duration);
     }
   });
 }
-function nearestOffsetPercent(x, y){
+function nearestOffsetPercent(state, x, y){
   let bestDist = Infinity, bestLen = 0;
-  for(let i = 0; i < traceClosed.length - 1; i++){
-    const [x1, y1] = traceClosed[i], [x2, y2] = traceClosed[i+1];
+  for(let i = 0; i < state.closed.length - 1; i++){
+    const [x1, y1] = state.closed[i], [x2, y2] = state.closed[i+1];
     const dx = x2 - x1, dy = y2 - y1;
     const segLen2 = dx*dx + dy*dy || 1;
     let t = ((x - x1) * dx + (y - y1) * dy) / segLen2;
     t = Math.max(0, Math.min(1, t));
     const px = x1 + t * dx, py = y1 + t * dy;
     const dist = Math.hypot(x - px, y - py);
-    if(dist < bestDist){ bestDist = dist; bestLen = traceCumLengths[i] + t * Math.sqrt(segLen2); }
+    if(dist < bestDist){ bestDist = dist; bestLen = state.cum[i] + t * Math.sqrt(segLen2); }
   }
-  return traceTotalLength ? (bestLen / traceTotalLength) * 100 : 0;
+  return state.total ? (bestLen / state.total * 100) : 0;
 }
 applyTracePaths();
 let traceResizeTimer;
@@ -457,9 +468,8 @@ window.addEventListener('resize', () => {
 });
 
 document.addEventListener('click', (e) => {
-  const pStr = tracePathString(tracePoints);
-  const landingPercent = nearestOffsetPercent(e.clientX, e.clientY);
   traceDots.forEach((dot, idx) => {
+    const state = dotState[idx];
     const rect = dot.getBoundingClientRect();
     dot.style.transition = 'none';
     dot.style.animation = 'none';
@@ -472,16 +482,19 @@ document.addEventListener('click', (e) => {
       dot.style.left = (e.clientX - 3.5) + 'px';
       dot.style.top = (e.clientY - 3.5) + 'px';
     });
+    // Nicht alle exakt gleichzeitig und nicht alle exakt ab Klickpunkt losfahren
+    const releaseDelay = rand(340, 620);
     setTimeout(() => {
-      // Von der Klickstelle direkt wieder auf die Route einschwenken und dort weiterfahren
       dot.style.transition = 'none';
       dot.style.left = '';
       dot.style.top = '';
-      dot.style.offsetPath = pStr;
+      dot.style.offsetPath = pathStringFromPoints(state.points);
       dot.style.offsetRotate = '0deg';
       dot.dataset.customized = 'true';
-      setTraceAnimation(dot, (landingPercent + idx * 3) % 100, -(idx * 0.7));
-    }, 380);
+      const landingPercent = nearestOffsetPercent(state, e.clientX, e.clientY);
+      const jitter = rand(-18, 18);
+      setTraceAnimation(dot, (landingPercent + jitter + 100) % 100, -(idx * 0.7), state.duration);
+    }, releaseDelay);
   });
 });
 
