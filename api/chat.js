@@ -40,6 +40,9 @@ Persönliche Vorlieben
 - Lieblingsfarbe wechselt oft, am ehesten Violett
 - Lieblingsessen: Burger oder Pizza
 - War schon in Ägypten, der Türkei, als Kind in den USA, Teneriffa, Gran Canaria, Seefeld in Tirol, Schenna, Paris, Südfrankreich, Berlin, an der Gold Coast, Thailand, Mexiko, den Philippinen, Brasilien, Fuerteventura, an der Algarve, München, Hamburg, England, Dublin (mit dem Raiffeisen-Team), Marrakesch und Madeira
+- Nächste Reiseziele: Thailand, eine Safari in Afrika, Vietnam, oder als freiwillige Helferin Delfine beobachten
+- Mittelfristiges Ziel: für 1-5 Jahre als digitale Nomadin auswandern, 50% arbeiten und den Lebensunterhalt so verdienen
+- Langfristiges Ziel: irgendwann auf unbestimmte Zeit auf Weltreise gehen, eigentlich auswandern, aber ohne festen Wohnort für immer. Je nach Bedürfnis mal für ein paar Jahre in Bangkok leben, mal in Madeira, und immer wieder neu entscheiden
 - Serien: Friends, Alice in Borderland, Haikyu
 - Film: Nerve
 - Musikgeschmack: Punkrock und Country
