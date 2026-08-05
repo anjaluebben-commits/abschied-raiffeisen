@@ -69,6 +69,25 @@ TONFALL:
 - Wenn du eine Info wirklich nicht sicher weisst (z.B. Detail zum Apéro wie Parkplätze, Dresscode), sag ehrlich dass das noch offen ist, statt sie zu erfinden
 - Antworte auf Schweizerdeutsch-nahes Hochdeutsch, kurz, max 2-4 Sätze`;
 
+const SUPABASE_URL = 'https://rrimkgippmpuiosojlnv.supabase.co';
+
+async function logChat(message, reply) {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/abschied_chat_logs`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+        Prefer: 'return=minimal'
+      },
+      body: JSON.stringify({ message, reply })
+    });
+  } catch (err) {
+    console.error('Chat log failed:', err);
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -100,6 +119,8 @@ export default async function handler(req, res) {
       .filter((b) => b.type === 'text')
       .map((b) => b.text)
       .join('\n') || 'Sorry, da ist etwas schiefgelaufen.';
+
+    await logChat(message, reply);
 
     return res.status(200).json({ reply });
   } catch (err) {

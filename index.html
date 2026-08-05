@@ -116,6 +116,10 @@
     cursor:pointer; border-radius:2px; transition:opacity 0.15s;
   }
   button.submit:hover{opacity:0.85;}
+  .rsvp-actions{display:flex; gap:0.9rem; flex-wrap:wrap; margin-top:0.5rem;}
+  .rsvp-actions button{margin-top:0;}
+  button.submit.secondary{background:transparent; border:1px solid var(--line); color:var(--text-dim);}
+  button.submit.secondary:hover{border-color:var(--red); color:var(--red); opacity:1;}
   .rsvp-note{font-size:0.8rem; color:var(--text-dim); margin-top:1rem;}
 
   /* CONCIERGE */
@@ -263,9 +267,12 @@
       <div><label for="name">Name</label><input type="text" id="name" required></div>
       <div><label for="email">E-Mail</label><input type="email" id="email" required></div>
       <div><label for="note">Nachricht an Anja (optional)</label><textarea id="note" rows="2"></textarea></div>
-      <button type="submit" class="submit">Anmelden</button>
+      <div class="rsvp-actions">
+        <button type="submit" class="submit">Anmelden</button>
+        <button type="button" id="rsvp-cancel" class="submit secondary">Abmelden</button>
+      </div>
     </form>
-    <p class="rsvp-note">Anmeldungen werden aktuell noch nicht gespeichert, das braucht eine kurze Backend-Anbindung.</p>
+    <p class="rsvp-note" id="rsvp-feedback">Name und E-Mail ausfüllen, dann Anmelden oder Abmelden wählen.</p>
   </div>
 </section>
 
@@ -341,10 +348,39 @@ function updateCountdown(){
 updateCountdown(); setInterval(updateCountdown, 60000);
 
 // RSVP
-document.getElementById('rsvp-form').addEventListener('submit', function(e){
+const rsvpForm = document.getElementById('rsvp-form');
+const rsvpFeedback = document.getElementById('rsvp-feedback');
+
+async function submitRsvp(status){
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const note = document.getElementById('note').value.trim();
+  if(!name || !email){
+    rsvpFeedback.textContent = 'Bitte Name und E-Mail ausfüllen.';
+    return;
+  }
+  rsvpFeedback.textContent = 'Wird gesendet...';
+  try{
+    const response = await fetch('/api/rsvp', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ name, email, note, status })
+    });
+    if(!response.ok) throw new Error('failed');
+    rsvpFeedback.textContent = status === 'angemeldet'
+      ? 'Danke für die Anmeldung, bis am 29.9.!'
+      : 'Schade, danke fürs Bescheid geben.';
+    rsvpForm.reset();
+  }catch(err){
+    rsvpFeedback.textContent = 'Hat gerade nicht geklappt, versuch\'s nochmal.';
+  }
+}
+
+rsvpForm.addEventListener('submit', function(e){
   e.preventDefault();
-  alert("Danke! (Demo-Modus: noch nicht gespeichert, Backend folgt.)");
-  this.reset();
+  submitRsvp('angemeldet');
+});
+document.getElementById('rsvp-cancel').addEventListener('click', function(){
+  submitRsvp('abgemeldet');
 });
 
 // Guestbook

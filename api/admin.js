@@ -1,0 +1,129 @@
+const SUPABASE_URL = 'https://rrimkgippmpuiosojlnv.supabase.co';
+
+function escapeHtml(str) {
+  return String(str ?? '').replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+function checkAuth(req) {
+  const header = req.headers.authorization || '';
+  if (!header.startsWith('Basic ')) return false;
+  const decoded = Buffer.from(header.slice(6), 'base64').toString('utf8');
+  const sepIndex = decoded.indexOf(':');
+  const user = decoded.slice(0, sepIndex);
+  const pass = decoded.slice(sepIndex + 1);
+  return user === process.env.ADMIN_USER && pass === process.env.ADMIN_PASS;
+}
+
+async function fetchTable(table, order = 'created_at.desc') {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*&order=${order}`, {
+    headers: {
+      apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
+    }
+  });
+  if (!response.ok) throw new Error(`Fetch ${table} failed: ${await response.text()}`);
+  return response.json();
+}
+
+function fmtDate(iso) {
+  try {
+    return new Date(iso).toLocaleString('de-CH', { dateStyle: 'medium', timeStyle: 'short' });
+  } catch {
+    return iso;
+  }
+}
+
+function renderPage({ rsvps, chatLogs }) {
+  const angemeldet = rsvps.filter((r) => r.status === 'angemeldet');
+  const abgemeldet = rsvps.filter((r) => r.status === 'abgemeldet');
+
+  const rsvpRows = (list) => list.map((r) => `
+    <tr>
+      <td>${escapeHtml(r.name)}</td>
+      <td>${escapeHtml(r.email)}</td>
+      <td>${escapeHtml(r.note) || '<span class="dim">–</span>'}</td>
+      <td class="mono dim">${fmtDate(r.created_at)}</td>
+    </tr>`).join('') || `<tr><td colspan="4" class="dim">Noch keine Einträge.</td></tr>`;
+
+  const chatRows = chatLogs.map((c) => `
+    <div class="chat-entry">
+      <div class="chat-meta mono dim">${fmtDate(c.created_at)}</div>
+      <div class="chat-msg"><span class="tag">Frage</span>${escapeHtml(c.message)}</div>
+      <div class="chat-reply"><span class="tag tag-yellow">Antwort</span>${escapeHtml(c.reply)}</div>
+    </div>`).join('') || `<p class="dim">Noch keine Chatverläufe.</p>`;
+
+  return `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin – Abschied Anja</title>
+<style>
+  :root{ --bg:#08080a; --panel:#131316; --line:#2a2a30; --yellow:#FFD400; --text:#f2f2f0; --text-dim:#8b8b93; }
+  *{box-sizing:border-box;}
+  body{background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; margin:0; padding:2rem 1.5rem 4rem;}
+  h1{font-size:1.6rem; margin-bottom:0.25rem;}
+  h2{font-size:1.15rem; margin:2.5rem 0 1rem;}
+  .dim{color:var(--text-dim);}
+  .mono{font-family:'IBM Plex Mono',monospace; font-size:0.8rem;}
+  .sub{color:var(--text-dim); margin-bottom:2rem;}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:1.25rem; max-width:1000px;}
+  table{width:100%; border-collapse:collapse; font-size:0.9rem;}
+  th,td{text-align:left; padding:0.6rem 0.7rem; border-bottom:1px solid var(--line);}
+  th{color:var(--text-dim); font-family:'IBM Plex Mono',monospace; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em;}
+  .count{color:var(--yellow); font-family:'IBM Plex Mono',monospace;}
+  .chat-entry{border-bottom:1px solid var(--line); padding:0.9rem 0;}
+  .chat-entry:last-child{border-bottom:none;}
+  .chat-meta{margin-bottom:0.4rem;}
+  .chat-msg, .chat-reply{margin-bottom:0.3rem; font-size:0.92rem;}
+  .tag{display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-dim); border:1px solid var(--line); border-radius:3px; padding:0.1rem 0.4rem; margin-right:0.5rem;}
+  .tag-yellow{color:var(--yellow); border-color:var(--yellow);}
+  a.reload{color:var(--yellow); font-family:'IBM Plex Mono',monospace; font-size:0.8rem; text-decoration:none;}
+</style>
+</head>
+<body>
+  <h1>Admin – Abschied Anja</h1>
+  <p class="sub">Anmeldungen, Abmeldungen und Chatverläufe der Abschieds-Website. <a class="reload" href="/admin">↻ Aktualisieren</a></p>
+
+  <h2>Angemeldet <span class="count">(${angemeldet.length})</span></h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Name</th><th>E-Mail</th><th>Nachricht</th><th>Zeitpunkt</th></tr></thead>
+      <tbody>${rsvpRows(angemeldet)}</tbody>
+    </table>
+  </div>
+
+  <h2>Abgemeldet <span class="count">(${abgemeldet.length})</span></h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Name</th><th>E-Mail</th><th>Nachricht</th><th>Zeitpunkt</th></tr></thead>
+      <tbody>${rsvpRows(abgemeldet)}</tbody>
+    </table>
+  </div>
+
+  <h2>Chatverläufe <span class="count">(${chatLogs.length})</span></h2>
+  <div class="card">${chatRows}</div>
+</body>
+</html>`;
+}
+
+export default async function handler(req, res) {
+  if (!checkAuth(req)) {
+    res.setHeader('WWW-Authenticate', 'Basic realm="Admin"');
+    return res.status(401).send('Authentication required');
+  }
+
+  try {
+    const [rsvps, chatLogs] = await Promise.all([
+      fetchTable('abschied_rsvps'),
+      fetchTable('abschied_chat_logs')
+    ]);
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.status(200).send(renderPage({ rsvps, chatLogs }));
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send('Fehler beim Laden der Daten.');
+  }
+}
