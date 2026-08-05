@@ -21,6 +21,7 @@
   *{box-sizing:border-box; margin:0; padding:0;}
   html{scroll-behavior:smooth;}
   body{
+    position:relative;
     background:
       radial-gradient(circle at 15% 10%, rgba(255,212,0,0.05), transparent 40%),
       radial-gradient(circle at 85% 30%, rgba(232,32,37,0.05), transparent 40%),
@@ -30,6 +31,16 @@
     line-height:1.55;
     -webkit-font-smoothing:antialiased;
   }
+  /* Leiser, lebendiger Hintergrund: technisches Grid, das langsam heller/dunkler pulsiert */
+  body::before{
+    content:"";
+    position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background-image:linear-gradient(rgba(255,212,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,212,0,0.03) 1px, transparent 1px);
+    background-size:42px 42px;
+    animation:bgPulse 9s ease-in-out infinite alternate;
+  }
+  @keyframes bgPulse{0%{opacity:0.45;} 100%{opacity:1;}}
+  @media (prefers-reduced-motion: reduce){ body::before{animation:none; opacity:0.7;} }
   h1,h2,h3{font-family:'Space Grotesk', sans-serif; font-weight:600; letter-spacing:-0.01em;}
   .mono{font-family:'IBM Plex Mono', monospace;}
   section{padding:5rem 1.5rem; max-width:760px; margin:0 auto;}
@@ -89,13 +100,16 @@
   .log-head span{font-family:'IBM Plex Mono', monospace; font-size:0.7rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.09em;}
   .entry{
     display:grid; grid-template-columns:60px 1fr; gap:1.25rem;
-    padding:1.35rem 0; border-bottom:1px solid var(--line);
+    padding:1.35rem 0.75rem; margin:0 -0.75rem; border-bottom:1px solid var(--line); border-radius:2px;
+    transition:background-color 0.25s ease, border-color 0.25s ease;
   }
-  .entry .idx{font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--yellow-dim); padding-top:0.15rem;}
+  .entry .idx{font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--yellow-dim); padding-top:0.15rem; transition:color 0.25s ease;}
   .entry .desc h3{font-size:1.12rem; margin-bottom:0.3rem;}
   .entry .desc p{color:var(--text-dim); font-size:0.94rem;}
   .entry.final .idx{color:var(--yellow);}
   .entry.final{border-bottom:1px solid var(--yellow);}
+  .entry:hover{background-color:rgba(255,212,0,0.05); border-color:var(--yellow-dim);}
+  .entry:hover .idx{color:var(--yellow);}
 
   /* RSVP */
   .rsvp-box{background:var(--panel); border:1px solid var(--line); padding:2.5rem 2rem; border-radius:2px;}
@@ -167,11 +181,6 @@
   .mini-list li{list-style:none; border-bottom:1px solid var(--line); padding-bottom:0.6rem; color:var(--text-dim);}
   .mini-list li span{color:var(--yellow); font-family:'IBM Plex Mono'; font-size:0.75rem; margin-right:0.5rem;}
 
-  .stats-grid{display:flex; flex-direction:column; gap:0.9rem;}
-  .stat-row{display:flex; justify-content:space-between; align-items:baseline; border-bottom:1px solid var(--line); padding-bottom:0.75rem; font-size:0.95rem;}
-  .stat-val{color:var(--yellow);}
-  .stat-val em{color:var(--text-dim); font-style:normal; font-size:0.8rem;}
-
   footer{text-align:center; padding:3rem 1.5rem 4rem; color:var(--text-dim); font-size:0.8rem; font-family:'IBM Plex Mono';}
 
   /* NAV — bottom app-bar on mobile, sidebar on desktop */
@@ -239,20 +248,6 @@
   <div class="entry"><div class="idx">LOG_04</div><div class="desc"><h3>125 Jahre Raiffeisen</h3><p>Jubiläum gefeiert und dafür richtig Werbung gemacht.</p></div></div>
   <div class="entry"><div class="idx">LOG_05</div><div class="desc"><h3>Neue Team-Fotos</h3><p>Alle Mitarbeitenden neu fotografiert.</p></div></div>
   <div class="entry final"><div class="idx">LOG_06</div><div class="desc"><h3>Logout</h3><p>Abschied nach drei Jahren.</p></div></div>
-</section>
-
-<section id="stats">
-  <span class="eyebrow">Session Stats</span>
-  <div class="card">
-    <div class="stats-grid">
-      <div class="stat-row"><span>Session Duration</span><span class="mono stat-val">ca. 3 Jahre</span></div>
-      <div class="stat-row"><span>Kampagnen umgesetzt</span><span class="mono stat-val">?? <em>TBD</em></span></div>
-      <div class="stat-row"><span>Events organisiert</span><span class="mono stat-val">?? <em>TBD</em></span></div>
-      <div class="stat-row"><span>Mitarbeitende fotografiert</span><span class="mono stat-val">?? <em>TBD</em></span></div>
-      <div class="stat-row"><span>"Chasch no schnell..."-Anfragen</span><span class="mono stat-val">∞</span></div>
-    </div>
-    <p class="hint" style="margin-top:1.25rem;">Zahlen mit "TBD" sind Platzhalter, echte Werte trägst du noch ein.</p>
-  </div>
 </section>
 
 <section id="farewell">
