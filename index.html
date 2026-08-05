@@ -168,11 +168,49 @@
   .stat-val em{color:var(--text-dim); font-style:normal; font-size:0.8rem;}
 
   footer{text-align:center; padding:3rem 1.5rem 4rem; color:var(--text-dim); font-size:0.8rem; font-family:'IBM Plex Mono';}
+
+  /* NAV — bottom app-bar on mobile, sidebar on desktop */
+  body{padding-bottom:64px;}
+  nav#appnav{
+    position:fixed; z-index:100; left:0; right:0; bottom:0;
+    display:flex; justify-content:space-around; align-items:stretch;
+    background:var(--panel); border-top:1px solid var(--line);
+    padding-bottom:env(safe-area-inset-bottom, 0);
+  }
+  nav#appnav a{
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.3rem;
+    padding:0.6rem 0.25rem; color:var(--text-dim); text-decoration:none;
+    font-family:'IBM Plex Mono', monospace; font-size:0.6rem; text-transform:uppercase; letter-spacing:0.03em;
+    transition:color 0.15s; box-shadow:inset 0 2px 0 0 transparent;
+  }
+  nav#appnav a svg{width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round;}
+  nav#appnav a.active{color:var(--yellow); box-shadow:inset 0 2px 0 0 var(--yellow);}
+
+  @media (min-width:861px){
+    body{padding-bottom:0; padding-left:92px;}
+    nav#appnav{
+      top:0; bottom:0; right:auto; width:92px;
+      flex-direction:column; justify-content:flex-start; align-items:stretch;
+      border-top:none; border-right:1px solid var(--line);
+      padding-top:2.5rem; gap:0.35rem;
+    }
+    nav#appnav a{padding:0.9rem 0.25rem; font-size:0.6rem; gap:0.45rem; box-shadow:inset 2px 0 0 0 transparent;}
+    nav#appnav a svg{width:22px; height:22px;}
+    nav#appnav a.active{box-shadow:inset 2px 0 0 0 var(--yellow); background:rgba(255,212,0,0.06);}
+  }
 </style>
 </head>
 <body>
 
-<section class="hero">
+<nav id="appnav" aria-label="Hauptnavigation">
+  <a href="#top" class="active"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h3v-6h6v6h3a1 1 0 0 0 1-1v-9"/></svg><span>Start</span></a>
+  <a href="#timeline"><svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/></svg><span>Logbuch</span></a>
+  <a href="#rsvp"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M4 6l8 7 8-7"/></svg><span>Anmeldung</span></a>
+  <a href="#concierge"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span>Chat</span></a>
+  <a href="#game"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Quiz</span></a>
+</nav>
+
+<section class="hero" id="top">
   <div class="hero-inner">
     <div id="boot" class="mono"></div>
     <h1>Drei Jahre <span class="hl">eingeloggt.</span><br>Jetzt wird<br>ausgecheckt.</h1>
@@ -273,6 +311,18 @@
 <footer>abschied.anja-renggli.ch</footer>
 
 <script>
+// Nav: highlight current section while scrolling
+const navLinks = document.querySelectorAll('#appnav a');
+const navSections = [...navLinks].map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(!entry.isIntersecting) return;
+    const href = '#' + entry.target.id;
+    navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === href));
+  });
+}, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+navSections.forEach(s => navObserver.observe(s));
+
 // Boot text typewriter
 const bootText = "SYSTEM: RAIFFEISENBANK_RIGI // STATUS: ABSCHIEDS_PROTOKOLL_AKTIV";
 let bi = 0;
