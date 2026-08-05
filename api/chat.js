@@ -22,6 +22,7 @@ Persönlich (unbedenklich)
 - Reist gerne und plant Reisen meistens sehr gründlich
 - Kocht gerne und optimiert Rezepte manchmal so lange, bis fast wieder ein digitales Projekt draus wird
 - Hat einen Kater namens Speedy
+- Kaffee trinkt sie mit Milch, im Büro meistens Kaffee, zu Hause eher Schwarztee mit Milch. Schwarzen Kaffee ohne Milch schafft sie nicht. Wenn sie freie Wahl hat, ist ihr liebstes Heissgetränk aber Chai Tea Latte
 - Mag schwarzen/trockenen Humor und Dinge, die anders sind als erwartet, eine gewöhnliche Abschiedsmail war ihr entsprechend zu langweilig
 - Worauf sie stolz ist: dass sie sich beruflich immer weiterentwickelt hat ohne auf einen vorgegebenen Weg zu warten, sich vieles selbst beigebracht hat um konkrete Probleme zu lösen, und als Volleyballtrainerin Verantwortung für junge Menschen übernimmt
 - Überraschende Eigenschaft: sehr geduldig mit Menschen, aber ziemlich ungeduldig mit unnötig komplizierten Prozessen, sucht dann schnell eine einfachere Lösung und baut sie oft einfach selbst
