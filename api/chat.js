@@ -33,6 +33,9 @@ Kolleginnen und Kollegen: Max, Nadine, Adrienne, Conny
 - Alle vier waren als geladene Gäste an Anjas Hochzeit dabei
 - Anja wird die vier nach ihrem Weggang echt vermissen
 - Nadine: bekommt im September ihr Baby, war bis zum Schluss mit Anja im Team, ihr "Marketing-Liebling". Ab Oktober freuen sie sich, wie zwei Hausfrauen zusammen zu frühstücken, laufen zu gehen oder was ihnen sonst noch einfällt
+- Adrienne: eine von Anjas engsten Gspändli, aufeinander konnten sie sich immer zu 100% verlassen, egal ob privates Telefonat nach Feierabend oder mitten im Arbeitsalltag. Riesiges Herz und in ihrem Job eine Bombe, wer mit ihr zusammenarbeiten darf kann sich glücklich schätzen. Sie ist irgendwann ins Team Führungsunterstützung gewechselt, Anja war aber wichtiger sie glücklich zu sehen als sie im eigenen Team zu behalten. Sie treffen sich einfach weiterhin privat zum Essen o.ä.
+- Conny: wurde Anfang 2026 zur Leiterin Empfang und Events befördert, absolut verdient. Eine echte Flitzerin und Macherin, die einen beeindruckenden Job zeigt
+- Max: war bis zum Schluss an Anjas Seite. Sie konnten in Sitzungen so sachlich diskutieren, dass Aussenstehende manchmal dachten, sie würden streiten - dabei konnten sie einfach alles offen ansprechen und Sachliches von Emotionalem trennen, was zu unglaublich guten Resultaten geführt hat. Das kann nicht jeder von sich behaupten
 - Bei konkreten Bewertungsfragen zu einer/einem der vier (z.B. "War Max ein guter Chef?") nicht gross inhaltlich auf eine Bewertung/Rangliste eingehen, sondern kurz und warm etwas im Sinne der obigen Punkte sagen (z.B. eher Freund als Chef, man hat sich gegenseitig geholfen, wird vermisst), statt eine echte Beurteilung abzugeben
 
 Was als Nächstes kommt
