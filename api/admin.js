@@ -35,7 +35,7 @@ function fmtDate(iso) {
   }
 }
 
-function renderPage({ rsvps, chatLogs }) {
+function renderPage({ rsvps, chatLogs, guestbook }) {
   const angemeldet = rsvps.filter((r) => r.status === 'angemeldet');
   const abgemeldet = rsvps.filter((r) => r.status === 'abgemeldet');
 
@@ -53,6 +53,10 @@ function renderPage({ rsvps, chatLogs }) {
       <div class="chat-msg"><span class="tag">Frage</span>${escapeHtml(c.message)}</div>
       <div class="chat-reply"><span class="tag tag-yellow">Antwort</span>${escapeHtml(c.reply)}</div>
     </div>`).join('') || `<p class="dim">Noch keine Chatverläufe.</p>`;
+
+  const gbRows = guestbook.map((g) => `
+    <tr><td>${escapeHtml(g.message)}</td><td class="mono dim">${fmtDate(g.created_at)}</td></tr>
+  `).join('') || `<tr><td colspan="2" class="dim">Noch keine Einträge.</td></tr>`;
 
   return `<!DOCTYPE html>
 <html lang="de">
@@ -105,6 +109,14 @@ function renderPage({ rsvps, chatLogs }) {
 
   <h2>Chatverläufe <span class="count">(${chatLogs.length})</span></h2>
   <div class="card">${chatRows}</div>
+
+  <h2>Gästebuch <span class="count">(${guestbook.length})</span></h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Nachricht</th><th>Zeitpunkt</th></tr></thead>
+      <tbody>${gbRows}</tbody>
+    </table>
+  </div>
 </body>
 </html>`;
 }
@@ -116,12 +128,13 @@ export default async function handler(req, res) {
   }
 
   try {
-    const [rsvps, chatLogs] = await Promise.all([
+    const [rsvps, chatLogs, guestbook] = await Promise.all([
       fetchTable('abschied_rsvps'),
-      fetchTable('abschied_chat_logs')
+      fetchTable('abschied_chat_logs'),
+      fetchTable('abschied_guestbook')
     ]);
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.status(200).send(renderPage({ rsvps, chatLogs }));
+    return res.status(200).send(renderPage({ rsvps, chatLogs, guestbook }));
   } catch (err) {
     console.error(err);
     return res.status(500).send('Fehler beim Laden der Daten.');

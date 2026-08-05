@@ -384,15 +384,51 @@ document.getElementById('rsvp-cancel').addEventListener('click', function(){
 });
 
 // Guestbook
-document.getElementById('gb-add').addEventListener('click', () => {
-  const input = document.getElementById('gb-input');
-  const val = input.value.trim();
-  if(!val) return;
+const gbList = document.getElementById('gb-list');
+const gbInput = document.getElementById('gb-input');
+
+function renderGbEntry(message){
   const li = document.createElement('li');
-  li.innerHTML = `<span>—</span>${val}`;
-  document.getElementById('gb-list').prepend(li);
-  input.value = '';
-});
+  const span = document.createElement('span');
+  span.textContent = '—';
+  li.appendChild(span);
+  li.appendChild(document.createTextNode(message));
+  gbList.appendChild(li);
+}
+
+async function loadGuestbook(){
+  try{
+    const response = await fetch('/api/guestbook');
+    const data = await response.json();
+    gbList.innerHTML = '';
+    (data.entries || []).forEach(e => renderGbEntry(e.message));
+  }catch(err){ /* still zeigbar leer, kein Blocker */ }
+}
+loadGuestbook();
+
+async function addGuestbookEntry(){
+  const val = gbInput.value.trim();
+  if(!val) return;
+  gbInput.value = '';
+  try{
+    const response = await fetch('/api/guestbook', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ message: val })
+    });
+    if(!response.ok) throw new Error('failed');
+    const li = document.createElement('li');
+    const span = document.createElement('span');
+    span.textContent = '—';
+    li.appendChild(span);
+    li.appendChild(document.createTextNode(val));
+    gbList.prepend(li);
+  }catch(err){
+    gbInput.value = val;
+    alert("Hat gerade nicht geklappt, versuch's nochmal.");
+  }
+}
+document.getElementById('gb-add').addEventListener('click', addGuestbookEntry);
+gbInput.addEventListener('keydown', e => { if(e.key === 'Enter') addGuestbookEntry(); });
 
 // AI Concierge
 const chatLog = document.getElementById('chat-log');
