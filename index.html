@@ -536,8 +536,8 @@ async function submitRsvp(status){
     });
     if(!response.ok) throw new Error('failed');
     rsvpFeedback.textContent = status === 'angemeldet'
-      ? 'Danke für die Anmeldung, bis am 29.9.!'
-      : 'Schade, danke fürs Bescheid geben.';
+      ? 'Danke für deine Anmeldung'
+      : 'Schade, kannst du nicht dabei sein. Ich hoffe wir hören uns auf einem anderen Kanal noch';
     rsvpForm.reset();
   }catch(err){
     rsvpFeedback.textContent = 'Hat gerade nicht geklappt, versuch\'s nochmal.';
