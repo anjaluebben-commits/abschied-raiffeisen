@@ -41,10 +41,10 @@ function renderPage({ rsvps, chatLogs, guestbook }) {
 
   const rsvpRows = (list) => list.map((r) => `
     <tr>
-      <td>${escapeHtml(r.name)}</td>
-      <td>${escapeHtml(r.email)}</td>
-      <td>${escapeHtml(r.note) || '<span class="dim">–</span>'}</td>
-      <td class="mono dim">${fmtDate(r.created_at)}</td>
+      <td data-label="Name">${escapeHtml(r.name)}</td>
+      <td data-label="E-Mail">${escapeHtml(r.email)}</td>
+      <td data-label="Nachricht">${escapeHtml(r.note) || '<span class="dim">–</span>'}</td>
+      <td data-label="Zeitpunkt" class="mono dim">${fmtDate(r.created_at)}</td>
     </tr>`).join('') || `<tr><td colspan="4" class="dim">Noch keine Einträge.</td></tr>`;
 
   const CHAT_PAGE_SIZE = 4;
@@ -59,7 +59,7 @@ function renderPage({ rsvps, chatLogs, guestbook }) {
     : '';
 
   const gbRows = guestbook.map((g) => `
-    <tr><td>${escapeHtml(g.message)}</td><td class="mono dim">${fmtDate(g.created_at)}</td></tr>
+    <tr><td data-label="Nachricht">${escapeHtml(g.message)}</td><td data-label="Zeitpunkt" class="mono dim">${fmtDate(g.created_at)}</td></tr>
   `).join('') || `<tr><td colspan="2" class="dim">Noch keine Einträge.</td></tr>`;
 
   return `<!DOCTYPE html>
@@ -92,6 +92,19 @@ function renderPage({ rsvps, chatLogs, guestbook }) {
   .chat-entry.hidden{display:none;}
   button.load-more{margin-top:0.75rem; background:transparent; border:1px solid var(--yellow); color:var(--yellow); padding:0.55rem 1.2rem; font-family:'IBM Plex Mono',monospace; font-size:0.78rem; cursor:pointer; border-radius:3px;}
   button.load-more:hover{background:rgba(255,212,0,0.08);}
+  @media (max-width: 640px){
+    body{padding:1.25rem 1rem 3rem;}
+    .card{padding:0.9rem;}
+    table, thead, tbody, th, td, tr{display:block;}
+    thead{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;}
+    table tr{border:1px solid var(--line); border-radius:4px; margin-bottom:0.75rem; padding:0.3rem 0.7rem;}
+    table tr:last-child{margin-bottom:0;}
+    table td{border-bottom:1px solid var(--line); padding:0.55rem 0; padding-left:42%; position:relative; min-height:1.4rem;}
+    table td:last-child{border-bottom:none;}
+    table td::before{content:attr(data-label); position:absolute; left:0; top:0.55rem; width:38%; font-family:'IBM Plex Mono',monospace; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-dim);}
+    table td[colspan]{padding-left:0;}
+    table td[colspan]::before{content:none;}
+  }
 </style>
 </head>
 <body>
