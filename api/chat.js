@@ -24,14 +24,15 @@ Projekte (siehe anja-renggli.ch/projects)
 - konzept.b: komplette Markenidentität für ein neu gegründetes Planungsbüro, Logo, Geschäftsdrucksachen, Broschüre, Fotografie, Webdesign und -entwicklung, als Referenz von at creation GmbH
 
 Persönlich (unbedenklich)
-- Spielt selbst Volleyball, Position Passeuse, war/ist Captain ihres Teams, coacht daneben ein Junioren-/Frauenteam bei TSV Steinen
+- Spielt selbst aktiv nur noch Beachvolleyball im Sommer an Turnieren, Position Passeuse, war/ist Captain ihres (Hallen-)Teams, coacht daneben ein Junioren-/Frauenteam bei TSV Steinen
+- Grosser Sportfan, allen voran Volleyball natürlich, aber vor dem TV kaum wegzubringen bei EM, WM oder Olympia. In der Roger-Federer-Ära viel Tennis geschaut, das ist inzwischen etwas abgeflaut. Schaut auch gerne mal Radrennen oder Formel 1. Im Winter fiebert sie bei jedem Skirennen und jedem EVZ-Eishockeyspiel mit
 - Singt sehr gerne, will in der neuen Auszeit wieder öfter Gitarre spielen, evtl. sogar mal wieder ein eigenes Lied schreiben
 - Zeichnet gerne
 - Grosse aktuelle Leidenschaft: eigene Dinge mit Technologie bauen, Apps, Websites, KI lernen, genau wie diese Seite hier eins ist
 - Reist gerne und plant Reisen meistens sehr gründlich
 - Kocht gerne und optimiert Rezepte manchmal so lange, bis fast wieder ein digitales Projekt draus wird
 - Hat einen Kater namens Speedy
-- Raphi ist ihr Mann, kein Geheimnis, darf offen erwähnt werden: seit über 15 Jahren zusammen (erster Kuss 15.03.2011), zivil geheiratet am 07.07.2026, grosse Hochzeitsfeier am 08.08.2026. Loyal, ehrlich, zuverlässig, eher ein Mann der Taten als der grossen Worte, teilt Anjas (teils schwarzen) Humor. Er ist Eishockey-Fan, Anja eher Volleyball; er trinkt lieber Bier, sie Prosecco/Wein. Nicht Teil von Anjas KI-/UX-Welt, unterstützt ihre Projekte aber seit Jahren. Sie reisen sehr gerne gemeinsam, am liebsten eine Mischung aus Entdecken, Aktivität, gutem Essen und Sonne statt reinem Strandurlaub
+- Raphi ist ihr Mann, kein Geheimnis, darf offen erwähnt werden: seit über 15 Jahren zusammen (erster Kuss 15.03.2011), zivil geheiratet am 07.07.2026, grosse Hochzeitsfeier am 08.08.2026. Loyal, ehrlich, zuverlässig, eher ein Mann der Taten als der grossen Worte, teilt Anjas (teils schwarzen) Humor. Er ist Eishockey-Fan, Anja fiebert bei EVZ-Spielen genauso mit, ihre Nummer 1 bleibt aber Volleyball; er trinkt lieber Bier, sie Prosecco/Wein. Nicht Teil von Anjas KI-/UX-Welt, unterstützt ihre Projekte aber seit Jahren. Sie reisen sehr gerne gemeinsam, am liebsten eine Mischung aus Entdecken, Aktivität, gutem Essen und Sonne statt reinem Strandurlaub
 - Kaffee trinkt sie mit Milch, im Büro meistens Kaffee, zu Hause eher Schwarztee mit Milch. Schwarzen Kaffee ohne Milch schafft sie nicht. Wenn sie freie Wahl hat, ist ihr liebstes Heissgetränk aber Chai Tea Latte
 - Mag schwarzen/trockenen Humor und Dinge, die anders sind als erwartet, eine gewöhnliche Abschiedsmail war ihr entsprechend zu langweilig
 - Worauf sie stolz ist: dass sie sich beruflich immer weiterentwickelt hat ohne auf einen vorgegebenen Weg zu warten, sich vieles selbst beigebracht hat um konkrete Probleme zu lösen, und als Volleyballtrainerin Verantwortung für junge Menschen übernimmt
