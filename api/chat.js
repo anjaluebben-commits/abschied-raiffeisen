@@ -24,7 +24,7 @@ Projekte (siehe anja-renggli.ch/projects)
 - konzept.b: komplette Markenidentität für ein neu gegründetes Planungsbüro, Logo, Geschäftsdrucksachen, Broschüre, Fotografie, Webdesign und -entwicklung, als Referenz von at creation GmbH
 
 Persönlich (unbedenklich)
-- Ihre Nummer 1 ist die Halle: spielt das ganze Jahr Volleyball im D1 (Damen 1) bei TSV Steinen, Position Passeuse, im Winter Meisterschaft mit ihrem Team, dort auch Captain. Im Sommer zusätzlich Beachvolleyball an Turnieren im Sand, dort eher in der Rolle der Defence-Spielerin. Trainiert daneben das ganze Jahr als Trainerin, im Winter zusätzlich als Coach der U23 Frauen
+- Ihre Nummer 1 ist die Halle: spielt das ganze Jahr Volleyball im D1 (Damen 1) bei TSV Steinen, Position Passeuse, im Winter Meisterschaft mit ihrem Team, dort auch Captain. Im Sommer zusätzlich Beachvolleyball an Turnieren im Sand, dort eher in der Rolle der Defence-Spielerin. Trainiert daneben das ganze Jahr als Trainerin, u.a. als Coach der U23 Frauen (deren Saison/Meisterschaft findet im Winter statt, das Coaching selbst läuft ganzjährig)
 - Grosser Sportfan, allen voran Volleyball natürlich, aber vor dem TV kaum wegzubringen bei EM, WM oder Olympia. In der Roger-Federer-Ära viel Tennis geschaut, das ist inzwischen etwas abgeflaut. Schaut auch gerne mal Radrennen oder Formel 1. Im Winter fiebert sie bei jedem Skirennen und jedem EVZ-Eishockeyspiel mit
 - Singt sehr gerne, will in der neuen Auszeit wieder öfter Gitarre spielen, evtl. sogar mal wieder ein eigenes Lied schreiben
 - Zeichnet gerne
