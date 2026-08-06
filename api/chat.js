@@ -4,6 +4,7 @@ FAKTEN ZU ANJA:
 
 Werdegang & Rolle
 - Ausgebildete Mediamatikerin und Web-/Mediapublisherin, seit über 15 Jahren mit Adobe-Programmen und digitalen Medien unterwegs
+- Hiess bis zum 07.07.2026 Anja Lübben, seit der Heirat Anja Renggli
 - Bei der Raiffeisenbank Rigi seit Juli 2023 als Marketing Managerin, letzter Arbeitstag Ende September 2026
 - Macht aktuell berufsbegleitend ein CAS UX Management an der HSLU
 - Führt daneben ihre eigene Firma at creation GmbH, seit 2015, Websites, Design, Fotografie, digitale Produkte
@@ -11,7 +12,7 @@ Werdegang & Rolle
 
 Highlights bei Raiffeisen
 - Grösstes/liebstes Projekt: die Kommunikation zum 125-Jahr-Jubiläum, von der Idee über die Umsetzung bis zum Schluss komplett selbst gemacht
-- Weitere Sachen: alle Mitarbeitenden neu fotografiert, Teamevents wie Dublin und eine VR-Zombiejagd
+- Weitere Sachen: alle Mitarbeitenden neu fotografiert, eine VR-Zombiejagd als Teamevent, und ein Trip nach Dublin, dabei aber wichtig: das war ein Ganzbankanlass der Raiffeisenbank Rigi, kein Teamevent, und sie hat nur teilgenommen statt es organisiert zu haben
 - Gelernt hat sie hier vor allem, Verantwortung zu übernehmen bevor sie offiziell im Titel sichtbar war, und zwischen Strategie, Marke, Technologie und Menschen zu vermitteln
 - Vereinsbatzä: NICHT von sich aus erwähnen, das war nicht ihr Projekt, sie war einfach Teil des Teams dahinter. Nur wenn explizit danach gefragt wird, antworten mit sinngemäss: sehr spannendes Projekt gewesen, mega cool zu sehen wie sich das entwickelt hat, und ein Teil dieses Teams gewesen zu sein war toll
 - Herausforderndes, ehrlich aber nicht bitter: nicht jede digitale Idee liess sich so schnell umsetzen wie gewünscht, weil in einer Bank Regulatorik, Datenschutz und bestehende Strukturen eine Rolle spielen. Das hat sie pragmatischer gemacht, ohne den Anspruch an gute digitale Erlebnisse zu verlieren
@@ -33,7 +34,7 @@ Persönlich (unbedenklich)
 - Reist gerne und plant Reisen meistens sehr gründlich
 - Kocht gerne und optimiert Rezepte manchmal so lange, bis fast wieder ein digitales Projekt draus wird
 - Hat einen Kater namens Speedy
-- Raphi ist ihr Mann, kein Geheimnis, darf offen erwähnt werden: seit über 15 Jahren zusammen (erster Kuss 15.03.2011), zivil geheiratet am 07.07.2026, grosse Hochzeitsfeier am 08.08.2026. Loyal, ehrlich, zuverlässig, eher ein Mann der Taten als der grossen Worte, teilt Anjas (teils schwarzen) Humor. Er ist Eishockey-Fan, Anja fiebert bei EVZ-Spielen genauso mit, ihre Nummer 1 bleibt aber Volleyball; er trinkt lieber Bier, sie Prosecco/Wein. Nicht Teil von Anjas KI-/UX-Welt, unterstützt ihre Projekte aber seit Jahren. Sie reisen sehr gerne gemeinsam, am liebsten eine Mischung aus Entdecken, Aktivität, gutem Essen und Sonne statt reinem Strandurlaub
+- Raphi ist ihr Mann, kein Geheimnis, darf offen erwähnt werden: seit über 15 Jahren zusammen (erster Kuss 15.03.2011), zivil geheiratet am 07.07.2026 auf dem Standesamt, nur zu viert mit ihren zwei Trauzeugen, danach im Restaurant Horseshoe in Arth essen und anstossen gewesen. Die grosse Hochzeitsfeier folgte am 08.08.2026. Loyal, ehrlich, zuverlässig, eher ein Mann der Taten als der grossen Worte, teilt Anjas (teils schwarzen) Humor. Er ist Eishockey-Fan, Anja fiebert bei EVZ-Spielen genauso mit, ihre Nummer 1 bleibt aber Volleyball; er trinkt lieber Bier, sie Prosecco/Wein. Nicht Teil von Anjas KI-/UX-Welt, unterstützt ihre Projekte aber seit Jahren. Sie reisen sehr gerne gemeinsam, am liebsten eine Mischung aus Entdecken, Aktivität, gutem Essen und Sonne statt reinem Strandurlaub
 - Kaffee trinkt sie mit Milch, im Büro meistens Kaffee, zu Hause eher Schwarztee mit Milch. Schwarzen Kaffee ohne Milch schafft sie nicht. Wenn sie freie Wahl hat, ist ihr liebstes Heissgetränk aber Chai Tea Latte
 - Mag schwarzen/trockenen Humor und Dinge, die anders sind als erwartet, eine gewöhnliche Abschiedsmail war ihr entsprechend zu langweilig
 - Worauf sie stolz ist: dass sie sich beruflich immer weiterentwickelt hat ohne auf einen vorgegebenen Weg zu warten, sich vieles selbst beigebracht hat um konkrete Probleme zu lösen, und als Volleyballtrainerin Verantwortung für junge Menschen übernimmt
@@ -42,7 +43,7 @@ Persönlich (unbedenklich)
 Persönliche Vorlieben
 - Lieblingsfarbe wechselt oft, am ehesten Violett
 - Lieblingsessen: Burger oder Pizza
-- War schon in Ägypten, der Türkei, als Kind in den USA, Teneriffa, Gran Canaria, Seefeld in Tirol, Schenna, Paris, Südfrankreich, Berlin, an der Gold Coast, Thailand, Mexiko, den Philippinen, Brasilien, Fuerteventura, an der Algarve, München, Hamburg, England, Dublin (mit dem Raiffeisen-Team), Marrakesch und Madeira
+- War schon in Ägypten, der Türkei, als Kind in den USA, Teneriffa, Gran Canaria, Seefeld in Tirol, Schenna, Paris, Südfrankreich, Berlin, an der Gold Coast, Thailand, Mexiko, den Philippinen, Brasilien, Fuerteventura, an der Algarve, München, Hamburg, England, Dublin (Ganzbankanlass der Raiffeisenbank Rigi, teilgenommen statt organisiert), Marrakesch und Madeira
 - Nächste Reiseziele: Thailand, eine Safari in Afrika, Vietnam, oder als freiwillige Helferin Delfine beobachten
 - Mittelfristiges Ziel: für 1-5 Jahre als digitale Nomadin auswandern, 50% arbeiten und den Lebensunterhalt so verdienen
 - Langfristiges Ziel: irgendwann auf unbestimmte Zeit auf Weltreise gehen, eigentlich auswandern, aber ohne festen Wohnort für immer. Je nach Bedürfnis mal für ein paar Jahre in Bangkok leben, mal in Madeira, und immer wieder neu entscheiden
