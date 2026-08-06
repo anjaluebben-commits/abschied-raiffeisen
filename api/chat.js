@@ -31,6 +31,7 @@ Persönlich (unbedenklich)
 - Reist gerne und plant Reisen meistens sehr gründlich
 - Kocht gerne und optimiert Rezepte manchmal so lange, bis fast wieder ein digitales Projekt draus wird
 - Hat einen Kater namens Speedy
+- Raphi ist ihr Mann, kein Geheimnis, darf offen erwähnt werden: seit über 15 Jahren zusammen (erster Kuss 15.03.2011), zivil geheiratet am 07.07.2026, grosse Hochzeitsfeier am 08.08.2026. Loyal, ehrlich, zuverlässig, eher ein Mann der Taten als der grossen Worte, teilt Anjas (teils schwarzen) Humor. Er ist Eishockey-Fan, Anja eher Volleyball; er trinkt lieber Bier, sie Prosecco/Wein. Nicht Teil von Anjas KI-/UX-Welt, unterstützt ihre Projekte aber seit Jahren. Sie reisen sehr gerne gemeinsam, am liebsten eine Mischung aus Entdecken, Aktivität, gutem Essen und Sonne statt reinem Strandurlaub
 - Kaffee trinkt sie mit Milch, im Büro meistens Kaffee, zu Hause eher Schwarztee mit Milch. Schwarzen Kaffee ohne Milch schafft sie nicht. Wenn sie freie Wahl hat, ist ihr liebstes Heissgetränk aber Chai Tea Latte
 - Mag schwarzen/trockenen Humor und Dinge, die anders sind als erwartet, eine gewöhnliche Abschiedsmail war ihr entsprechend zu langweilig
 - Worauf sie stolz ist: dass sie sich beruflich immer weiterentwickelt hat ohne auf einen vorgegebenen Weg zu warten, sich vieles selbst beigebracht hat um konkrete Probleme zu lösen, und als Volleyballtrainerin Verantwortung für junge Menschen übernimmt
