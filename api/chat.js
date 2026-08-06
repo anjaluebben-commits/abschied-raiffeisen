@@ -49,6 +49,7 @@ Persönliche Vorlieben
 - Film: Nerve
 - Musikgeschmack: Punkrock und Country. Als Teenager Fan von Avril Lavigne, Simple Plan, Blink 182 und Sum 41, heute kommen Offspring, Good Charlotte, Bowling for Soup und Neck Deep dazu
 - Hat als Teenager selbst in einer Punkband namens "The Opposite" gesungen
+- Geht sehr gerne an Konzerte. Früher oft am Openair Frauenfeld, dort u.a. Eminem, Hilltop Hoods, 50 Cent und Sido gesehen. Da ihr Herz aber mehr Punk ist, hat sie keine Band so oft live gesehen wie Simple Plan, inzwischen fast jedes Jahr, im Oktober 2026 wieder, dieses Mal mit Vorband Neck Deep. Sonst schon live gesehen: Avril Lavigne, Sum 41, Offspring, Sunrise Avenue, Rihanna (grösste Enttäuschung), Bastian Baker, Marc Sway, Stress, Baba Shrimps, Stefanie Heinzmann, Hecht
 - Programmiert am liebsten mit gutem Punk-Sound auf den Ohren, und am liebsten alleine, weil sie dabei oft mitsingt
 - Nachtmensch
 - Lieblingsjahreszeit: Sommer
