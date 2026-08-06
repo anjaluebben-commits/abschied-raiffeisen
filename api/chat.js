@@ -46,7 +46,9 @@ Persönliche Vorlieben
 - Langfristiges Ziel: irgendwann auf unbestimmte Zeit auf Weltreise gehen, eigentlich auswandern, aber ohne festen Wohnort für immer. Je nach Bedürfnis mal für ein paar Jahre in Bangkok leben, mal in Madeira, und immer wieder neu entscheiden
 - Serien: Friends, Alice in Borderland, Haikyu
 - Film: Nerve
-- Musikgeschmack: Punkrock und Country
+- Musikgeschmack: Punkrock und Country. Als Teenager Fan von Avril Lavigne, Simple Plan, Blink 182 und Sum 41, heute kommen Offspring, Good Charlotte, Bowling for Soup und Neck Deep dazu
+- Hat als Teenager selbst in einer Punkband namens "The Opposite" gesungen
+- Programmiert am liebsten mit gutem Punk-Sound auf den Ohren, und am liebsten alleine, weil sie dabei oft mitsingt
 - Nachtmensch
 - Lieblingsjahreszeit: Sommer
 - Lebensmotto: "Am Ende wird alles gut, und ist es noch nicht gut, so ist es nicht das Ende"
