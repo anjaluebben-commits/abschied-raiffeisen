@@ -656,7 +656,7 @@ const questions = [
   { q: "Welche Position spielt Anja im Volleyball?", options: ["Aussen", "Bänkliwärmer", "Libera", "Pass"], a: 3 },
   { q: "Was hat Raphi mit «Ja, ich will» eigentlich noch mitgeheiratet?", options: ["Einen Kater mit sehr klaren Besitzansprüchen", "Ungefähr 37 offene Projekte", "Den Satz: «Ich habe da nur noch eine kleine Idee …»", "Alles zusammen"], a: 3 }
 ];
-let qi = 0, score = 0;
+let qi = 0, score = 0, answersLog = [];
 const qEl = document.getElementById('quiz-question');
 const oEl = document.getElementById('quiz-options');
 const pEl = document.getElementById('quiz-progress');
@@ -680,7 +680,9 @@ function renderQuestion(){
 function selectAnswer(i, btn){
   const item = questions[qi];
   [...oEl.children].forEach(c => c.disabled = true);
-  if(i === item.a){ btn.classList.add('correct'); score++; }
+  const isCorrect = i === item.a;
+  answersLog.push(isCorrect);
+  if(isCorrect){ btn.classList.add('correct'); score++; }
   else{ btn.classList.add('wrong'); oEl.children[item.a].classList.add('correct'); }
   setTimeout(() => {
     qi++;
@@ -700,8 +702,13 @@ function showResult(){
     0: "Nun ja. Umso mehr Grund, am 29.9. vorbeizukommen."
   };
   document.getElementById('quiz-comment').textContent = comments[score];
+  fetch('/api/quiz', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ answers: answersLog })
+  }).catch(() => {});
 }
-document.getElementById('quiz-restart').addEventListener('click', () => { qi = 0; score = 0; renderQuestion(); });
+document.getElementById('quiz-restart').addEventListener('click', () => { qi = 0; score = 0; answersLog = []; renderQuestion(); });
 renderQuestion();
 </script>
 

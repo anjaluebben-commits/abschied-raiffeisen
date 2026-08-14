@@ -35,9 +35,33 @@ function fmtDate(iso) {
   }
 }
 
-function renderPage({ rsvps, chatLogs, guestbook }) {
+const QUIZ_QUESTIONS = [
+  'Was war eines der ersten Projekte von Anja bei der Raiffeisenbank Rigi?',
+  'In welchem Jahr hat Anja ihre eigene Agentur at creation GmbH gegründet?',
+  'Welche Position spielt Anja im Volleyball?',
+  'Was hat Raphi mit «Ja, ich will» eigentlich noch mitgeheiratet?'
+];
+
+function renderPage({ rsvps, chatLogs, guestbook, quizResults }) {
   const angemeldet = rsvps.filter((r) => r.status === 'angemeldet');
   const abgemeldet = rsvps.filter((r) => r.status === 'abgemeldet');
+
+  const quizTotal = quizResults.length;
+  const quizBars = QUIZ_QUESTIONS.map((question, i) => {
+    const correct = quizResults.filter((r) => r.answers && r.answers[i] === true).length;
+    const wrong = quizTotal - correct;
+    const correctPct = quizTotal ? (correct / quizTotal) * 100 : 0;
+    const wrongPct = quizTotal ? 100 - correctPct : 0;
+    return `
+    <div class="quiz-row">
+      <div class="quiz-q">${escapeHtml(question)}</div>
+      <div class="quiz-bar">
+        ${correct ? `<div class="quiz-seg quiz-correct" style="width:${correctPct}%">${correct}</div>` : ''}
+        ${wrong ? `<div class="quiz-seg quiz-wrong" style="width:${wrongPct}%">${wrong}</div>` : ''}
+        ${quizTotal === 0 ? `<div class="quiz-seg quiz-empty">–</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
 
   const rsvpRows = (list) => list.map((r) => `
     <tr>
@@ -69,7 +93,7 @@ function renderPage({ rsvps, chatLogs, guestbook }) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin – Abschied Anja</title>
 <style>
-  :root{ --bg:#08080a; --panel:#131316; --line:#2a2a30; --yellow:#FFD400; --text:#f2f2f0; --text-dim:#8b8b93; }
+  :root{ --bg:#08080a; --panel:#131316; --line:#2a2a30; --yellow:#FFD400; --text:#f2f2f0; --text-dim:#8b8b93; --red:#e82025; --green:#22c55e; }
   *{box-sizing:border-box;}
   body{background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; margin:0; padding:2rem 1.5rem 4rem;}
   h1{font-size:1.6rem; margin-bottom:0.25rem;}
@@ -92,6 +116,14 @@ function renderPage({ rsvps, chatLogs, guestbook }) {
   .chat-entry.hidden{display:none;}
   button.load-more{margin-top:0.75rem; background:transparent; border:1px solid var(--yellow); color:var(--yellow); padding:0.55rem 1.2rem; font-family:'IBM Plex Mono',monospace; font-size:0.78rem; cursor:pointer; border-radius:3px;}
   button.load-more:hover{background:rgba(255,212,0,0.08);}
+  .quiz-row{margin-bottom:1.1rem;}
+  .quiz-row:last-child{margin-bottom:0;}
+  .quiz-q{font-size:0.88rem; margin-bottom:0.4rem;}
+  .quiz-bar{display:flex; width:100%; height:28px; border-radius:4px; overflow:hidden; background:var(--line);}
+  .quiz-seg{display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:0.78rem; font-weight:600; color:#0a0a0a; min-width:1.8em;}
+  .quiz-correct{background:var(--green);}
+  .quiz-wrong{background:var(--red); color:#fff;}
+  .quiz-empty{width:100%; background:var(--line); color:var(--text-dim); font-family:'IBM Plex Mono',monospace; font-size:0.78rem;}
   @media (max-width: 640px){
     body{padding:1.25rem 1rem 3rem;}
     .card{padding:0.9rem;}
@@ -126,6 +158,9 @@ function renderPage({ rsvps, chatLogs, guestbook }) {
       <tbody>${rsvpRows(abgemeldet)}</tbody>
     </table>
   </div>
+
+  <h2>Quiz <span class="count">(${quizTotal} Durchläufe)</span></h2>
+  <div class="card">${quizBars}</div>
 
   <h2>Chatverläufe <span class="count">(${chatLogs.length})</span></h2>
   <div class="card" id="chat-log-list">${chatRows}${chatMoreBtn}</div>
@@ -163,13 +198,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    const [rsvps, chatLogs, guestbook] = await Promise.all([
+    const [rsvps, chatLogs, guestbook, quizResults] = await Promise.all([
       fetchTable('abschied_rsvps'),
       fetchTable('abschied_chat_logs'),
-      fetchTable('abschied_guestbook')
+      fetchTable('abschied_guestbook'),
+      fetchTable('abschied_quiz_results')
     ]);
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.status(200).send(renderPage({ rsvps, chatLogs, guestbook }));
+    return res.status(200).send(renderPage({ rsvps, chatLogs, guestbook, quizResults }));
   } catch (err) {
     console.error(err);
     return res.status(500).send('Fehler beim Laden der Daten.');
