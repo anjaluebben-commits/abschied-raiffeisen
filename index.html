@@ -62,9 +62,15 @@
     background:var(--yellow);
     box-shadow:0 0 10px 2px rgba(var(--yellow-rgb),0.5);
     cursor:pointer; transition:transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+    animation:colorSwitchPulse 2.4s ease-in-out infinite;
   }
-  #color-switch:hover{transform:scale(1.08);}
+  #color-switch:hover{transform:scale(1.08); animation-play-state:paused;}
   #color-switch:active{transform:scale(0.92);}
+  @keyframes colorSwitchPulse{
+    0%, 100%{ box-shadow:0 0 10px 2px rgba(var(--yellow-rgb),0.5); }
+    50%{ box-shadow:0 0 10px 2px rgba(var(--yellow-rgb),0.5), 0 0 0 8px rgba(var(--yellow-rgb),0.18); }
+  }
+  @media (prefers-reduced-motion: reduce){ #color-switch{ animation:none; } }
 
   h1,h2,h3{font-family:'Space Grotesk', sans-serif; font-weight:600; letter-spacing:-0.01em;}
   .mono{font-family:'IBM Plex Mono', monospace;}
