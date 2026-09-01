@@ -241,6 +241,55 @@
   .rebel.laugh .reb-mouth{ animation:rebMouth .32s ease-in-out 6; transform-box:fill-box; transform-origin:center; }
   @keyframes rebMouth{ 0%,100%{transform:scaleY(1);} 50%{transform:scaleY(2.4);} }
 
+  /* Rebell rennt quer durchs Bild, mit Staubwolke im Schlepptau */
+  .rebel-run{ left:0; transition:transform 1.8s linear; }
+  .rebel-run.lr{ transform:translateX(-160px); }
+  .rebel-run.rl{ transform:translateX(calc(100vw + 60px)); }
+  .rebel-run.lr.go{ transform:translateX(calc(100vw + 60px)); }
+  .rebel-run.rl.go{ transform:translateX(-160px); }
+  .rebel-run .reb-wrap{ transform:rotate(-7deg); transform-origin:center; }
+  .rebel-run.rl .reb-wrap{ transform:scaleX(-1) rotate(-7deg); }
+  .rebel-run .reb-leg-l, .rebel-run .reb-leg-r{ transform-box:fill-box; transform-origin:top; }
+  .rebel-run .reb-leg-l{ animation:rebLegL .16s linear infinite; }
+  .rebel-run .reb-leg-r{ animation:rebLegR .16s linear infinite; }
+  @keyframes rebLegL{ 0%,100%{transform:rotate(-30deg);} 50%{transform:rotate(30deg);} }
+  @keyframes rebLegR{ 0%,100%{transform:rotate(30deg);} 50%{transform:rotate(-30deg);} }
+  .rebel-run .reb-body{ animation:rebRunBounce .16s linear infinite; }
+  @keyframes rebRunBounce{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-3px);} }
+
+  .dust{ position:absolute; bottom:2px; width:52px; height:26px; pointer-events:none; }
+  .rebel-run.lr .dust{ right:100%; }
+  .rebel-run.rl .dust{ left:100%; transform:scaleX(-1); }
+  .dust span{
+    position:absolute; bottom:0; width:13px; height:13px; border-radius:50%;
+    background:radial-gradient(circle, rgba(224,208,182,.6), rgba(224,208,182,0) 70%);
+    filter:blur(1px); animation:dustPuff .45s ease-out infinite;
+  }
+  .dust span:nth-child(1){ left:0;   animation-delay:0s;   }
+  .dust span:nth-child(2){ left:13px; animation-delay:.11s; }
+  .dust span:nth-child(3){ left:26px; animation-delay:.22s; }
+  @keyframes dustPuff{ 0%{transform:scale(.3) translateY(0); opacity:.7;} 100%{transform:scale(1.5) translateY(7px); opacity:0;} }
+
+  /* Rebell seilt sich von oben ab */
+  .rebel-rappel{
+    top:0; height:0; width:2px; transition:height 1s cubic-bezier(.4,0,.2,1);
+  }
+  .rebel-rappel::before{
+    content:""; position:absolute; top:0; left:0; width:2px; height:100%;
+    background:var(--rc); box-shadow:0 0 6px rgba(var(--rc-rgb),.6); opacity:.85;
+  }
+  .rebel-rappel .reb-wrap{
+    position:absolute; top:100%; left:50%; transform:translate(-50%,-4px);
+    width:clamp(70px,7vw,100px);
+  }
+  .rebel-rappel.down{ height:var(--rope,220px); }
+
+  /* Rebell klettert von unten hoch */
+  .rebel-climb{
+    bottom:0; transform:translateY(112%); transition:transform 1s cubic-bezier(.34,1.2,.6,1);
+  }
+  .rebel-climb.in{ transform:translateY(16%); }
+
   @media (prefers-reduced-motion: reduce){
     .rebel{display:none;}
     body::before{animation:none; opacity:.85;}
@@ -1016,17 +1065,26 @@
         '<rect x="34" y="76" width="32" height="26" rx="9" fill="#0e0e12"/>' +
         '<path class="reb-arm" d="M34 84q-13 -1 -17 -15"/>' +
         '<path d="M66 86q11 1 13 11"/>' +
+        '<path class="reb-leg-l" d="M42 102l-6 9"/>' +
+        '<path class="reb-leg-r" d="M58 102l6 9"/>' +
       '</g>' +
     '</svg>';
 
-  function spawnRebel(){
-    var edge = Math.random() < 0.5 ? 'left' : 'right';
-    var gestures = ['wave', 'wave', 'wink', 'laugh'];
-    var gesture = gestures[Math.floor(Math.random() * gestures.length)];
-
+  function pickRebelColor(){
     // Farbe: bewusst NICHT die gerade aktive
     var pool = ACCENTS.filter(function(_, i){ return i !== accIdx; });
-    var col = pool[Math.floor(Math.random() * pool.length)];
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+  function randomGesture(){
+    var g = ['wave', 'wave', 'wink', 'laugh'];
+    return g[Math.floor(Math.random() * g.length)];
+  }
+
+  // schaut kurz von der Seite rein, winkt/zwinkert/lacht
+  function spawnPeek(){
+    var edge = Math.random() < 0.5 ? 'left' : 'right';
+    var gesture = randomGesture();
+    var col = pickRebelColor();
 
     var r = document.createElement('div');
     r.className = 'rebel rebel-' + edge;
@@ -1042,10 +1100,75 @@
     setTimeout(function(){ r.remove(); }, 4200);
   }
 
+  // rennt schnell quer durchs Bild, Staubwolke im Schlepptau
+  function spawnRun(){
+    var dir = Math.random() < 0.5 ? 'lr' : 'rl';
+    var col = pickRebelColor();
+
+    var r = document.createElement('div');
+    r.className = 'rebel rebel-run ' + dir;
+    r.style.setProperty('--rc', col.main);
+    r.style.setProperty('--rc-rgb', col.rgb);
+    r.style.top = (58 + Math.random() * 28) + 'vh';
+    r.innerHTML =
+      '<div class="dust"><span></span><span></span><span></span></div>' +
+      '<div class="reb-wrap">' + REBEL_SVG + '</div>';
+    document.body.appendChild(r);
+
+    setTimeout(function(){ r.classList.add('go'); }, 30);
+    setTimeout(function(){ r.remove(); }, 2000);
+  }
+
+  // seilt sich von oben ab, hängt kurz und winkt/zwinkert/lacht, zieht sich wieder hoch
+  function spawnRappel(){
+    var gesture = randomGesture();
+    var col = pickRebelColor();
+    var rope = 130 + Math.random() * 170;
+
+    var r = document.createElement('div');
+    r.className = 'rebel rebel-rappel';
+    r.style.setProperty('--rc', col.main);
+    r.style.setProperty('--rc-rgb', col.rgb);
+    r.style.setProperty('--rope', rope + 'px');
+    r.style.left = (10 + Math.random() * 75) + 'vw';
+    r.innerHTML = '<div class="reb-wrap">' + REBEL_SVG + '</div>';
+    document.body.appendChild(r);
+
+    setTimeout(function(){ r.classList.add('down'); }, 30);
+    setTimeout(function(){ r.classList.add(gesture); }, 1150);
+    setTimeout(function(){ r.classList.remove('down'); }, 2750);
+    setTimeout(function(){ r.remove(); }, 3900);
+  }
+
+  // klettert von unten hoch, schaut über den Rand und winkt/zwinkert/lacht
+  function spawnClimb(){
+    var gesture = randomGesture();
+    var col = pickRebelColor();
+
+    var r = document.createElement('div');
+    r.className = 'rebel rebel-climb';
+    r.style.setProperty('--rc', col.main);
+    r.style.setProperty('--rc-rgb', col.rgb);
+    r.style.left = (10 + Math.random() * 75) + 'vw';
+    r.innerHTML = REBEL_SVG;
+    document.body.appendChild(r);
+
+    setTimeout(function(){ r.classList.add('in'); }, 30);
+    setTimeout(function(){ r.classList.add(gesture); }, 1100);
+    setTimeout(function(){ r.classList.remove('in'); }, 2700);
+    setTimeout(function(){ r.remove(); }, 3900);
+  }
+
   function scheduleRebel(){
-    var next = 16000 + Math.random() * 22000;   // alle 16–38 s ein Anlauf
+    var next = 14000 + Math.random() * 20000;   // alle 14–34 s ein Anlauf
     setTimeout(function(){
-      if (document.visibilityState === 'visible' && Math.random() < 0.65) spawnRebel();
+      if (document.visibilityState === 'visible' && Math.random() < 0.68){
+        var roll = Math.random();
+        if (roll < 0.45) spawnPeek();
+        else if (roll < 0.65) spawnRappel();
+        else if (roll < 0.85) spawnClimb();
+        else spawnRun();
+      }
       scheduleRebel();
     }, next);
   }
