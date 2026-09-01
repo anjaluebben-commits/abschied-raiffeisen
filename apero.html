@@ -36,6 +36,7 @@
     position:fixed; top:0; left:0; width:10px; height:10px; border-radius:50%;
     background:var(--acc); box-shadow:0 0 9px 2px var(--acc), 0 0 24px 8px rgba(var(--acc-rgb),.35);
     z-index:2; pointer-events:none; will-change:transform;
+    transition:background .5s ease, box-shadow .5s ease;
   }
 
   /* Farbknopf oben rechts (wie auf der echten Seite) */
@@ -133,19 +134,49 @@
     font-size:.85rem; color:var(--acc); display:none; letter-spacing:.1em;
   }
 
-  /* Gästebuch */
-  .gb-scene{text-align:center;}
-  .gb-page{display:flex; flex-direction:column; gap:1.5rem; align-items:center;}
-  .gb-entry{
-    opacity:0; transform:translateY(12px); transition:opacity .6s ease, transform .6s ease;
-    max-width:52ch;
+  /* Gästebuch – Roboter liest vor */
+  .gb-kicker-note{text-align:center;}
+  .gb-stage{display:flex; align-items:center; justify-content:center; gap:2rem;}
+  .gb-bot{flex:0 0 auto; width:148px;}
+  .gb-bot svg{width:100%; height:auto; overflow:visible;}
+  .gb-bot .bot-inner{animation:botBob 3.2s ease-in-out infinite; transform-origin:center;}
+  @keyframes botBob{0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);}}
+  .gb-bot .bot-antenna-tip{fill:var(--acc); animation:tipPulse 2.4s ease-in-out infinite;}
+  @keyframes tipPulse{0%,100%{opacity:.5;} 50%{opacity:1;}}
+  .gb-bot .bot-mouth{transform-box:fill-box; transform-origin:center;}
+  .gb-bot.speaking .bot-inner{animation-duration:1.1s;}
+  .gb-bot.speaking .bot-antenna-tip{animation-duration:.5s;}
+  .gb-bot.speaking .bot-mouth{animation:botMouth .26s steps(2) infinite;}
+  @keyframes botMouth{0%{transform:scaleY(.35);} 100%{transform:scaleY(1);}}
+
+  .gb-bubble{
+    position:relative; max-width:34ch; min-height:6.5em;
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:1.4rem 1.6rem; font-size:1.16rem; line-height:1.55;
   }
-  .gb-entry.in{opacity:1; transform:none;}
-  .gb-entry .gb-heart{
-    display:block; color:var(--acc); font-size:1.05rem; margin-bottom:.4rem;
-    text-shadow:0 0 12px rgba(var(--acc-rgb),.55);
+  .gb-bubble::after{
+    content:""; position:absolute; left:-12px; top:34px;
+    border:12px solid transparent; border-right-color:var(--line);
   }
-  .gb-entry p{font-size:1.14rem; font-style:italic; color:#dcdce0; line-height:1.55;}
+  .gb-bubble::before{
+    content:""; position:absolute; left:-10px; top:35px; z-index:1;
+    border:11px solid transparent; border-right-color:var(--panel);
+  }
+  .gb-bubble p{font-style:italic; color:#e6e6ea;}
+  .gb-bubble .gb-heart{
+    font-style:normal; color:var(--acc); margin-right:.4rem;
+    text-shadow:0 0 10px rgba(var(--acc-rgb),.6);
+  }
+
+  /* wandernde Punkte werden zu Herzen */
+  .rdot.asheart{background:transparent !important; box-shadow:none !important;}
+  .rdot.asheart::after{
+    content:"\2665"; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    font-size:15px; line-height:1; color:var(--acc);
+    text-shadow:0 0 8px var(--acc), 0 0 18px rgba(var(--acc-rgb),.5);
+  }
+
+  @media (max-width:720px){ .gb-stage{flex-direction:column; gap:1.2rem;} .gb-bubble::after,.gb-bubble::before{display:none;} }
 
   @media (prefers-reduced-motion: reduce){
     body::before{animation:none; opacity:.85;}
@@ -482,39 +513,42 @@
     'Drü mega tolli Jahr hend miär dörfä zämä schaffe und känne dönd miär üs scho sit üsärä Chindheit. Schön, dich dörfä z kännä. Ich wünsche dier für dini privati und brueflichi Zuekunft numä z Allerbesti.',
     'Der legendäre Ausgang beim Firmenausflug in Dublin bleibt unvergessen und wird mir noch lange in bester Erinnerung bleiben. Alles Gute für deine Zukunft! LG Rolf'
   ];
+  var BOT_SVG =
+    '<svg viewBox="0 0 120 150" fill="none" aria-hidden="true">' +
+      '<g class="bot-inner" stroke="var(--acc)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+        '<line x1="60" y1="15" x2="60" y2="30"/>' +
+        '<circle class="bot-antenna-tip" cx="60" cy="10" r="5" stroke="none"/>' +
+        '<path d="M18 52 h6 M96 52 h6"/>' +
+        '<rect x="24" y="30" width="72" height="56" rx="15" fill="#0f0f12"/>' +
+        '<circle cx="45" cy="54" r="6" fill="var(--acc)" stroke="none"/>' +
+        '<circle cx="75" cy="54" r="6" fill="var(--acc)" stroke="none"/>' +
+        '<rect class="bot-mouth" x="47" y="68" width="26" height="7" rx="3.5" fill="var(--acc)" stroke="none"/>' +
+        '<line x1="60" y1="86" x2="60" y2="92"/>' +
+        '<rect x="34" y="92" width="52" height="40" rx="11" fill="#0f0f12"/>' +
+        '<line x1="46" y1="105" x2="74" y2="105"/>' +
+        '<line x1="46" y1="115" x2="66" y2="115"/>' +
+      '</g>' +
+    '</svg>';
+
   function guestbookScene(){
     return { build: function(ctx){
       var el = document.createElement('div');
       el.className = 'scene gb-scene';
-      el.innerHTML = '<div class="kicker">Gästebuch &middot; ein paar Zeilen zum Abschied</div><div class="gb-holder"></div>';
+      el.innerHTML =
+        '<div class="kicker gb-kicker-note">Gästebuch &middot; der KI-Zwilling liest vor</div>' +
+        '<div class="gb-stage">' +
+          '<div class="gb-bot">' + BOT_SVG + '</div>' +
+          '<div class="gb-bubble"><p></p></div>' +
+        '</div>';
       ctx.stage.appendChild(el);
-      var holder = el.querySelector('.gb-holder');
+      var bot = el.querySelector('.gb-bot');
+      var pEl = el.querySelector('.gb-bubble p');
 
-      function paginate(arr){
-        var out = [], i;
-        for (i = 0; i < arr.length; i += 3) out.push(arr.slice(i, i + 3));
-        return out;
-      }
-      var pages = paginate(GB_FALLBACK.slice());
+      // Die drei wandernden Punkte werden für diese Szene zu Herzen
+      dotEls.forEach(function(d){ d.classList.add('asheart'); });
+      ctx.onCleanup(function(){ dotEls.forEach(function(d){ d.classList.remove('asheart'); }); });
 
-      function showPage(n){
-        if (!pages.length) return;
-        var page = pages[n % pages.length];
-        holder.innerHTML = '';
-        var wrap = document.createElement('div');
-        wrap.className = 'gb-page';
-        page.forEach(function(msg, i){
-          var e = document.createElement('div');
-          e.className = 'gb-entry';
-          e.innerHTML = '<span class="gb-heart">&#9829;</span><p></p>';
-          e.querySelector('p').textContent = '“' + msg + '”';
-          wrap.appendChild(e);
-          ctx.after(120 + i * 260, function(){ e.classList.add('in'); });
-        });
-        holder.appendChild(wrap);
-      }
-
-      // Live-Einträge nachladen; bis dahin zeigt der Fallback
+      var list = GB_FALLBACK.slice();
       fetch('/api/guestbook').then(function(r){ return r.json(); }).then(function(d){
         var seen = {};
         var live = (d && d.entries ? d.entries : [])
@@ -523,14 +557,28 @@
             if (m.length < 12 || seen[m]) return false;
             seen[m] = 1; return true;
           });
-        if (live.length) pages = paginate(live);
+        if (live.length) list = live;
       }).catch(function(){});
 
-      var ticks = 4;
-      for (var k = 0; k < ticks; k++){
-        (function(i){ ctx.after(300 + i * 6000, function(){ showPage(i); }); })(k);
+      var perEntry = 4800;
+      var maxEntries = 7;
+
+      function speak(i){
+        var msg = list[i % list.length];
+        pEl.innerHTML = '<span class="gb-heart">&#9829;</span>';
+        var span = document.createElement('span');
+        pEl.appendChild(span);
+        bot.classList.add('speaking');
+        typeInto(ctx, span, msg, 55);
+        var typeMs = REDUCED ? 0 : msg.length * (1000 / 55);
+        ctx.after(typeMs + 300, function(){ bot.classList.remove('speaking'); });
       }
-      return 300 + ticks * 6000 + 1200;
+
+      var count = Math.min(maxEntries, Math.max(3, GB_FALLBACK.length));
+      for (var k = 0; k < count; k++){
+        (function(i){ ctx.after(300 + i * perEntry, function(){ speak(i); }); })(k);
+      }
+      return 300 + count * perEntry + 1600;
     }};
   }
 
