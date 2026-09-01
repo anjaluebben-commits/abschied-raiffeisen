@@ -1,6 +1,8 @@
 {
   "rewrites": [
     { "source": "/admin", "destination": "/api/admin" },
-    { "source": "/apero", "destination": "/apero.html" }
+    { "source": "/apero", "destination": "/apero.html" },
+    { "source": "/fotobox", "destination": "/fotobox.html" },
+    { "source": "/fotobox-admin", "destination": "/fotobox-admin.html" }
   ]
 }

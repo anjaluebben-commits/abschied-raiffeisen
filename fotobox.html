@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+<title>Fotobox – Abschied Anja</title>
+<link rel="icon" type="image/png" href="img/anja-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#08080a; --panel:#131316; --line:#2a2a30; --acc:#FFD400; --acc-rgb:255,212,0; --text:#f2f2f0; --text-dim:#8b8b93; --heart:#FF3B3B; }
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    background:var(--bg); color:var(--text); font-family:'Space Grotesk',system-ui,sans-serif;
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  header{
+    padding:calc(env(safe-area-inset-top) + .9rem) 1rem .8rem; text-align:center; flex:0 0 auto;
+  }
+  header .t{font-weight:700; font-size:1.05rem;}
+  header .s{font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--acc); margin-top:.25rem; letter-spacing:.02em;}
+
+  .stage{
+    position:relative; flex:1 1 auto; margin:.4rem .8rem; border-radius:16px; overflow:hidden;
+    background:#000; border:1px solid var(--line);
+  }
+  #preview{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; background:#000;}
+  #preview.mirror{transform:scaleX(-1);}
+
+  .flash{position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none;}
+  .flash.go{animation:flash .35s ease-out;}
+  @keyframes flash{from{opacity:.9;} to{opacity:0;}}
+
+  .overlay{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:.6rem; text-align:center; padding:1.5rem; background:rgba(8,8,10,.82); backdrop-filter:blur(3px);
+    opacity:0; pointer-events:none; transition:opacity .25s ease;
+  }
+  .overlay.show{opacity:1;}
+  .overlay .big{font-size:2.4rem;}
+  .overlay .msg{font-size:1.05rem; max-width:22ch;}
+  .overlay .sub{font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--text-dim);}
+
+  .controls{
+    flex:0 0 auto; display:flex; align-items:center; justify-content:center; gap:2.2rem;
+    padding:1rem 1rem calc(env(safe-area-inset-bottom) + 1.3rem);
+  }
+  .icon-btn{
+    width:52px; height:52px; border-radius:50%; border:1px solid var(--line); background:var(--panel);
+    color:var(--text); font-size:1.3rem; display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .icon-btn:active{transform:scale(.94);}
+  #shutter{
+    width:82px; height:82px; border-radius:50%; border:5px solid var(--acc); background:rgba(var(--acc-rgb),.15);
+    cursor:pointer; flex:0 0 auto; position:relative;
+  }
+  #shutter::after{
+    content:""; position:absolute; inset:9px; border-radius:50%; background:var(--acc);
+    transition:transform .12s ease;
+  }
+  #shutter:active::after{transform:scale(.85);}
+  #shutter:disabled{opacity:.4; cursor:default;}
+
+  .hint{font-family:'IBM Plex Mono',monospace; font-size:.7rem; color:var(--text-dim); text-align:center; padding:0 1rem .6rem;}
+
+  .filefallback{
+    position:absolute; left:0; right:0; bottom:0; padding:1rem; display:none; flex-direction:column; gap:.6rem;
+    align-items:center; background:linear-gradient(transparent, rgba(8,8,10,.9) 40%);
+  }
+  .filefallback.show{display:flex;}
+  .filefallback label{
+    background:var(--acc); color:#0a0a0a; font-weight:600; padding:.85rem 1.4rem; border-radius:10px; cursor:pointer;
+    font-size:1rem;
+  }
+  .filefallback input{position:absolute; width:1px; height:1px; opacity:0;}
+  .filefallback p{font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--text-dim); text-align:center;}
+</style>
+</head>
+<body>
+  <header>
+    <div class="t">📸 Anjas Abschieds-Fotobox</div>
+    <div class="s">dein Bild landet live auf der Leinwand</div>
+  </header>
+
+  <div class="stage">
+    <video id="preview" playsinline autoplay muted></video>
+    <div class="flash" id="flash"></div>
+
+    <div class="filefallback" id="filefallback">
+      <label for="fileinput">Foto aufnehmen / auswählen</label>
+      <input type="file" id="fileinput" accept="image/*" capture="environment">
+      <p>Kamera-Zugriff nicht möglich – so geht's trotzdem.</p>
+    </div>
+
+    <div class="overlay" id="overlay">
+      <div class="big" id="ovBig">❤️</div>
+      <div class="msg" id="ovMsg">Dein Foto ist auf der Leinwand!</div>
+      <div class="sub" id="ovSub">gleich geht's weiter …</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="icon-btn" id="flip" title="Kamera wechseln" aria-label="Kamera wechseln">🔄</button>
+    <button id="shutter" aria-label="Foto aufnehmen"></button>
+    <div class="icon-btn" style="visibility:hidden">·</div>
+  </div>
+  <div class="hint" id="hint">Kamera wird gestartet …</div>
+
+<script>
+(function(){
+  "use strict";
+  var UPLOAD_TOKEN = 'apero-goldau-2609';
+  var MAX_DIM = 1280;
+  var JPEG_Q = 0.82;
+
+  var video = document.getElementById('preview');
+  var shutter = document.getElementById('shutter');
+  var flipBtn = document.getElementById('flip');
+  var hint = document.getElementById('hint');
+  var flash = document.getElementById('flash');
+  var overlay = document.getElementById('overlay');
+  var ovBig = document.getElementById('ovBig');
+  var ovMsg = document.getElementById('ovMsg');
+  var ovSub = document.getElementById('ovSub');
+  var fileFallback = document.getElementById('filefallback');
+  var fileInput = document.getElementById('fileinput');
+
+  var facing = 'environment';
+  var stream = null;
+  var busy = false;
+
+  function setHint(t){ hint.textContent = t; }
+
+  async function startCamera(){
+    if (stream){ stream.getTracks().forEach(function(t){ t.stop(); }); stream = null; }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ showFileFallback(); return; }
+    try{
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: facing }, width: { ideal: 1920 }, height: { ideal: 1920 } },
+        audio: false
+      });
+      video.srcObject = stream;
+      video.classList.toggle('mirror', facing === 'user');
+      setHint('Tippe den grossen Knopf für dein Foto');
+      fileFallback.classList.remove('show');
+    }catch(err){
+      console.error('camera', err);
+      showFileFallback();
+    }
+    // Falls die Kamera gar nicht anspringt: Datei-Upload trotzdem anbieten
+    setTimeout(function(){
+      if (!video.videoWidth) fileFallback.classList.add('show');
+    }, 5000);
+  }
+  function showFileFallback(){
+    fileFallback.classList.add('show');
+    setHint('');
+  }
+
+  flipBtn.addEventListener('click', function(){
+    facing = (facing === 'environment') ? 'user' : 'environment';
+    startCamera();
+  });
+
+  function scaleCanvasFrom(source, w, h){
+    var scale = Math.min(1, MAX_DIM / Math.max(w, h));
+    var cw = Math.round(w * scale), ch = Math.round(h * scale);
+    var c = document.createElement('canvas');
+    c.width = cw; c.height = ch;
+    var ctx = c.getContext('2d');
+    ctx.drawImage(source, 0, 0, cw, ch);
+    return c.toDataURL('image/jpeg', JPEG_Q);
+  }
+
+  async function upload(dataUrl){
+    var r = await fetch('/api/apero-fotos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: dataUrl, token: UPLOAD_TOKEN })
+    });
+    if (!r.ok){
+      var e = {};
+      try { e = await r.json(); } catch(_){}
+      throw new Error(e.error || ('HTTP ' + r.status));
+    }
+  }
+
+  function showOverlay(ok, msg){
+    ovBig.textContent = ok ? '❤️' : '⚠️';
+    ovMsg.textContent = msg;
+    ovSub.textContent = ok ? 'gleich geht’s weiter …' : 'nochmal versuchen';
+    overlay.classList.add('show');
+    setTimeout(function(){ overlay.classList.remove('show'); busy = false; shutter.disabled = false; }, ok ? 2600 : 2200);
+  }
+
+  async function capture(dataUrl){
+    if (busy) return;
+    busy = true; shutter.disabled = true;
+    flash.classList.remove('go'); void flash.offsetWidth; flash.classList.add('go');
+    try{
+      await upload(dataUrl);
+      showOverlay(true, 'Dein Foto ist auf der Leinwand!');
+    }catch(err){
+      console.error('upload', err);
+      showOverlay(false, 'Hat nicht geklappt: ' + err.message);
+    }
+  }
+
+  shutter.addEventListener('click', function(){
+    if (busy || !video.videoWidth) return;
+    var dataUrl = scaleCanvasFrom(video, video.videoWidth, video.videoHeight);
+    capture(dataUrl);
+  });
+
+  fileInput.addEventListener('change', function(){
+    var f = fileInput.files && fileInput.files[0];
+    if (!f) return;
+    var img = new Image();
+    img.onload = function(){
+      var dataUrl = scaleCanvasFrom(img, img.naturalWidth, img.naturalHeight);
+      capture(dataUrl);
+      URL.revokeObjectURL(img.src);
+    };
+    img.onerror = function(){ showOverlay(false, 'Bild konnte nicht gelesen werden'); };
+    img.src = URL.createObjectURL(f);
+    fileInput.value = '';
+  });
+
+  // Bildschirm wachhalten
+  var wl = null;
+  async function lock(){
+    try{ if (navigator.wakeLock) wl = await navigator.wakeLock.request('screen'); }catch(_){}
+  }
+  lock();
+  document.addEventListener('visibilitychange', function(){
+    if (document.visibilityState === 'visible'){ lock(); if (!stream) startCamera(); }
+  });
+
+  startCamera();
+})();
+</script>
+</body>
+</html>

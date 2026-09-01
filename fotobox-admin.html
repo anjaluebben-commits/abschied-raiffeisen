@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fotobox Admin – Abschied Anja</title>
+<link rel="icon" type="image/png" href="img/anja-logo.png">
+<style>
+  :root{ --bg:#08080a; --panel:#131316; --line:#2a2a30; --acc:#FFD400; --text:#f2f2f0; --text-dim:#8b8b93; --red:#e82025; }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; padding:1.5rem 1rem 4rem;}
+  h1{font-size:1.4rem; margin-bottom:.3rem;}
+  .sub{color:var(--text-dim); font-size:.85rem; margin-bottom:1.5rem;}
+  .login{max-width:320px; display:flex; flex-direction:column; gap:.7rem;}
+  .login input{background:#0f0f12; border:1px solid var(--line); color:var(--text); padding:.7rem .85rem; border-radius:4px; font-size:.95rem;}
+  .btn{background:var(--acc); color:#0a0a0a; border:none; padding:.7rem 1.2rem; border-radius:4px; font-weight:600; cursor:pointer; font-family:inherit;}
+  .btn.sec{background:transparent; border:1px solid var(--line); color:var(--text);}
+  .msg{color:var(--red); font-size:.85rem; min-height:1.2em;}
+  .bar{display:flex; gap:.6rem; align-items:center; margin-bottom:1.2rem; flex-wrap:wrap;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:.8rem;}
+  .cell{background:var(--panel); border:1px solid var(--line); border-radius:6px; overflow:hidden; display:flex; flex-direction:column;}
+  .cell img{width:100%; aspect-ratio:4/3; object-fit:cover; display:block; background:#000;}
+  .cell.hidden img{opacity:.28; filter:grayscale(1);}
+  .cell .row{display:flex; align-items:center; justify-content:space-between; padding:.5rem .6rem; gap:.5rem;}
+  .cell .when{font-family:'IBM Plex Mono',monospace; font-size:.66rem; color:var(--text-dim);}
+  .toggle{border:1px solid var(--line); background:transparent; color:var(--text); border-radius:4px; padding:.35rem .6rem; font-size:.72rem; cursor:pointer; font-family:inherit; white-space:nowrap;}
+  .cell.hidden .toggle{border-color:var(--acc); color:var(--acc);}
+  .cell:not(.hidden) .toggle{border-color:var(--red); color:var(--red);}
+  #app{display:none;}
+</style>
+</head>
+<body>
+  <h1>Fotobox Admin</h1>
+  <p class="sub">Fotos vom Apéro aus-/einblenden. Änderungen erscheinen beim nächsten Wechsel der Leinwand.</p>
+
+  <form class="login" id="login">
+    <input type="text" id="u" placeholder="Benutzer" autocomplete="username">
+    <input type="password" id="p" placeholder="Passwort" autocomplete="current-password">
+    <button class="btn" type="submit">Anmelden</button>
+    <div class="msg" id="loginMsg"></div>
+  </form>
+
+  <div id="app">
+    <div class="bar">
+      <button class="btn sec" id="refresh">↻ Aktualisieren</button>
+      <span class="when" id="stat"></span>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+
+<script>
+(function(){
+  "use strict";
+  var auth = sessionStorage.getItem('fbAdminAuth') || '';
+  var loginForm = document.getElementById('login');
+  var app = document.getElementById('app');
+  var grid = document.getElementById('grid');
+  var stat = document.getElementById('stat');
+  var loginMsg = document.getElementById('loginMsg');
+
+  function fmt(iso){ try{ return new Date(iso).toLocaleString('de-CH',{dateStyle:'short',timeStyle:'short'}); }catch(e){ return iso; } }
+
+  async function load(){
+    stat.textContent = 'lädt …';
+    var r = await fetch('/api/apero-fotos?all=1', { headers:{ Authorization:'Basic ' + auth } });
+    if (r.status === 401){ logout('Anmeldung abgelehnt.'); return; }
+    var d = await r.json();
+    var fotos = d.fotos || [];
+    grid.innerHTML = '';
+    fotos.forEach(function(f){
+      var cell = document.createElement('div');
+      cell.className = 'cell' + (f.sichtbar ? '' : ' hidden');
+      var img = document.createElement('img');
+      img.loading = 'lazy'; img.src = f.url;
+      var row = document.createElement('div'); row.className = 'row';
+      var when = document.createElement('span'); when.className = 'when'; when.textContent = fmt(f.created_at);
+      var btn = document.createElement('button'); btn.className = 'toggle';
+      btn.textContent = f.sichtbar ? 'ausblenden' : 'einblenden';
+      btn.addEventListener('click', function(){ toggle(f, cell, btn); });
+      row.appendChild(when); row.appendChild(btn);
+      cell.appendChild(img); cell.appendChild(row);
+      grid.appendChild(cell);
+    });
+    stat.textContent = fotos.length + ' Fotos · ' + fotos.filter(function(f){return !f.sichtbar;}).length + ' ausgeblendet';
+  }
+
+  async function toggle(f, cell, btn){
+    btn.disabled = true;
+    var next = !cell.classList.contains('hidden') ? false : true; // sichtbar-Ziel
+    var r = await fetch('/api/apero-fotos?id=' + encodeURIComponent(f.id), {
+      method:'PATCH',
+      headers:{ 'Content-Type':'application/json', Authorization:'Basic ' + auth },
+      body: JSON.stringify({ sichtbar: next })
+    });
+    btn.disabled = false;
+    if (!r.ok){ btn.textContent = 'Fehler'; return; }
+    cell.classList.toggle('hidden', !next);
+    btn.textContent = next ? 'ausblenden' : 'einblenden';
+    stat.textContent = grid.querySelectorAll('.cell.hidden').length + ' ausgeblendet';
+  }
+
+  function showApp(){ loginForm.style.display = 'none'; app.style.display = 'block'; load(); }
+  function logout(m){
+    sessionStorage.removeItem('fbAdminAuth'); auth = '';
+    app.style.display = 'none'; loginForm.style.display = 'flex';
+    loginMsg.textContent = m || '';
+  }
+
+  loginForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    var u = document.getElementById('u').value, p = document.getElementById('p').value;
+    auth = btoa(u + ':' + p);
+    sessionStorage.setItem('fbAdminAuth', auth);
+    loginMsg.textContent = '';
+    showApp();
+  });
+  document.getElementById('refresh').addEventListener('click', load);
+
+  if (auth) showApp();
+})();
+</script>
+</body>
+</html>
