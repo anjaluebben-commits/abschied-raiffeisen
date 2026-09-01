@@ -181,8 +181,10 @@
 
   /* Fotobox: QR-Code + Live-Galerie */
   .qr-scene{text-align:center;}
-  .qr-scene h1{font-family:'Space Grotesk'; font-weight:600; font-size:clamp(1.5rem,4vw,2.4rem); line-height:1.2; margin-bottom:1.4rem;}
+  .qr-scene h1{font-family:'Space Grotesk'; font-weight:700; font-size:clamp(1.8rem,5vw,3rem); line-height:1.18; margin-bottom:.7rem; max-width:20ch; margin-left:auto; margin-right:auto;}
+  .qr-scene .qr-lead{color:var(--text); font-size:clamp(1rem,2.2vw,1.2rem); margin-bottom:1.5rem;}
   .qr-scene p, .fb-empty p{color:var(--text-dim); margin-top:1.1rem; font-size:1rem; line-height:1.5;}
+  .qr-scene .qr-lead{margin-top:0;}
   .qr-card{
     width:min(320px,66vw); margin:0 auto; padding:15px; background:#fff; border-radius:14px;
     box-shadow:0 0 44px rgba(var(--acc-rgb),.28);
@@ -637,7 +639,8 @@
       el.className = 'scene qr-scene';
       el.innerHTML =
         '<div class="kicker">Fotobox</div>' +
-        '<h1>Scan mich – dein Foto live auf die Leinwand 📸</h1>' +
+        '<h1>Lass uns zusammen noch ein Erinnerungsfoto schiessen 📸</h1>' +
+        '<p class="qr-lead">Scan den Code – dein Bild kommt sofort live auf die Leinwand.</p>' +
         '<div class="qr-card">' + QR_SVG + '</div>' +
         '<p class="mono">abschied.anja-renggli.ch/fotobox</p>';
       ctx.stage.appendChild(el);
@@ -660,7 +663,7 @@
           empty.className = 'fb-empty';
           empty.innerHTML =
             '<div class="qr-card">' + QR_SVG + '</div>' +
-            '<p>Noch keine Fotos – scan den Code und mach das erste! 📸<br>' +
+            '<p>Lass uns zusammen ein Erinnerungsfoto schiessen – scan den Code! 📸<br>' +
             '<span class="mono">abschied.anja-renggli.ch/fotobox</span></p>';
           holder.appendChild(empty);
           return;
