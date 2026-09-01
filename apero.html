@@ -664,7 +664,7 @@
 
       var PER_PAGE = 6;
       var HOLD = 4300;      // wie lange eine Seite steht
-      var MAX_PAGES = 10;   // pro Auftritt bis zu 60 Fotos durchblättern
+      var MAX_PAGES = 5;    // max. 4x umblättern pro Einschub (Seite 1 + 4 Wechsel)
       var pages = [];
       var pageIdx = 0;
       var grid = null, cells = null;
@@ -705,15 +705,18 @@
           else { cells[k].cell.style.display = 'none'; }
         }
       }
-      // eine Seite zeigen, dann ausfaden und die nächste – im Kreis, bis die Szene endet
+      // jede Seite genau einmal zeigen; danach ist Schluss und der Loop läuft weiter
       function step(){
         if (!pages.length){ showEmpty(); return; }
         if (!grid) buildGrid();
-        fill(pages[pageIdx % pages.length]);
+        fill(pages[pageIdx]);
         grid.classList.add('on');
         pageIdx++;
-        ctx.after(HOLD - 600, function(){ if (grid) grid.classList.remove('on'); });
-        ctx.after(HOLD, step);
+        if (pageIdx < pages.length){
+          ctx.after(HOLD - 600, function(){ if (grid) grid.classList.remove('on'); });
+          ctx.after(HOLD, step);
+        }
+        // letzte Seite bleibt stehen, bis die Szene endet
       }
       function start(){
         if (running) return;
@@ -728,14 +731,15 @@
       // frische Daten holen; falls vorher leer und jetzt Fotos: paging starten
       fetch('/api/apero-fotos').then(function(r){ return r.json(); }).then(function(d){
         window.__aperoFotos = d.fotos || [];
-        pages = toPages(window.__aperoFotos);
-        if (pages.length && !running) start();
-        else if (!pages.length && !running) showEmpty();
+        if (!running){
+          pages = toPages(window.__aperoFotos);
+          if (pages.length) start(); else showEmpty();
+        }
       }).catch(function(){});
 
-      // Dauer: genug, um alle Seiten einmal zu zeigen (min. 8s)
-      var n = Math.max(pages.length, (window.__aperoFotos || []).length > 5 ? 3 : 1);
-      return Math.max(8000, n * HOLD + 800);
+      // Dauer: genau so lang, dass alle Seiten einmal durchlaufen (max. 5)
+      var shown = pages.length || 2;   // Fallback, falls Daten noch geladen werden
+      return shown * HOLD + 700;
     }};
   }
 
