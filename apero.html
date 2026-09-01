@@ -25,10 +25,10 @@
   }
   body::before{
     content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
-    background-image:linear-gradient(rgba(var(--acc-rgb),0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--acc-rgb),0.03) 1px, transparent 1px);
-    background-size:42px 42px; animation:bgPulse 9s ease-in-out infinite alternate;
+    background-image:linear-gradient(rgba(var(--acc-rgb),0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--acc-rgb),0.10) 1px, transparent 1px);
+    background-size:42px 42px; animation:bgPulse 7s ease-in-out infinite alternate;
   }
-  @keyframes bgPulse{0%{opacity:.45;} 100%{opacity:1;}}
+  @keyframes bgPulse{0%{opacity:.35;} 100%{opacity:1;}}
   .mono{font-family:'IBM Plex Mono', monospace;}
 
   /* Roaming-Punkte */
@@ -148,7 +148,7 @@
   .gb-entry p{font-size:1.14rem; font-style:italic; color:#dcdce0; line-height:1.55;}
 
   @media (prefers-reduced-motion: reduce){
-    body::before{animation:none; opacity:.7;}
+    body::before{animation:none; opacity:.85;}
     #accent-btn{animation:none;}
     .scene{transition:none;}
   }
