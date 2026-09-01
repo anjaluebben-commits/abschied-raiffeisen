@@ -6,7 +6,7 @@
 <title>Apéro-Leinwand – Anjas KI-Zwilling</title>
 <link rel="icon" type="image/png" href="img/anja-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#08080a; --panel:#131316; --line:#2a2a30;
@@ -181,10 +181,16 @@
 
   /* Fotobox: QR-Code + Live-Galerie */
   .qr-scene{text-align:center;}
-  .qr-scene h1{font-family:'Space Grotesk'; font-weight:700; font-size:clamp(1.8rem,5vw,3rem); line-height:1.18; margin-bottom:.7rem; max-width:20ch; margin-left:auto; margin-right:auto;}
-  .qr-scene .qr-lead{color:var(--text); font-size:clamp(1rem,2.2vw,1.2rem); margin-bottom:1.5rem;}
+  .qr-scene h1{
+    font-family:'Caveat','Space Grotesk',cursive; font-weight:700;
+    font-size:clamp(2.3rem,6vw,4rem); line-height:1.05; letter-spacing:.01em;
+    margin:0 auto .5rem; max-width:26ch; color:var(--acc);
+  }
+  .qr-scene .qr-lead{
+    font-family:'Caveat','Space Grotesk',cursive; font-weight:600;
+    color:var(--text); font-size:clamp(1.35rem,3vw,1.9rem); margin:0 0 1.4rem;
+  }
   .qr-scene p, .fb-empty p{color:var(--text-dim); margin-top:1.1rem; font-size:1rem; line-height:1.5;}
-  .qr-scene .qr-lead{margin-top:0;}
   .qr-card{
     width:min(320px,66vw); margin:0 auto; padding:15px; background:#fff; border-radius:14px;
     box-shadow:0 0 44px rgba(var(--acc-rgb),.28);
@@ -196,12 +202,12 @@
   .fb-grid{
     display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:1fr; gap:.7rem;
     width:min(720px,92vw); margin:0 auto;
+    opacity:0; transition:opacity .6s ease;
   }
+  .fb-grid.on{opacity:1;}
   .fb-cell{
-    opacity:0; transform:scale(.93); transition:opacity .5s ease, transform .5s ease;
     aspect-ratio:1/1; border-radius:9px; overflow:hidden; border:1px solid var(--line);
   }
-  .fb-cell.in{opacity:1; transform:none;}
   .fb-cell:first-child{grid-column:span 2; grid-row:span 2;}
   .fb-cell img{width:100%; height:100%; object-fit:cover; display:block; background:#0f0f12;}
   .fb-empty{display:flex; flex-direction:column; align-items:center;}
@@ -649,48 +655,92 @@
   }
 
   function fotoboxLiveScene(){
-    return { build: function(ctx){
+    return { __isFoto: true, build: function(ctx){
       var el = document.createElement('div');
       el.className = 'scene fb-scene';
       el.innerHTML = '<div class="kicker">Fotobox &middot; live vom Apéro</div><div class="fb-holder"></div>';
       ctx.stage.appendChild(el);
       var holder = el.querySelector('.fb-holder');
 
-      function render(list){
-        holder.innerHTML = '';
-        if (!list || !list.length){
-          var empty = document.createElement('div');
-          empty.className = 'fb-empty';
-          empty.innerHTML =
-            '<div class="qr-card">' + QR_SVG + '</div>' +
-            '<p>Lass uns zusammen ein Erinnerungsfoto schiessen – scan den Code! 📸<br>' +
-            '<span class="mono">abschied.anja-renggli.ch/fotobox</span></p>';
-          holder.appendChild(empty);
-          return;
+      var PER_PAGE = 6;
+      var HOLD = 4300;      // wie lange eine Seite steht
+      var MAX_PAGES = 10;   // pro Auftritt bis zu 60 Fotos durchblättern
+      var pages = [];
+      var pageIdx = 0;
+      var grid = null, cells = null;
+      var running = false;
+
+      function toPages(list){
+        var out = [];
+        for (var i = 0; i < list.length && out.length < MAX_PAGES; i += PER_PAGE){
+          out.push(list.slice(i, i + PER_PAGE));
         }
-        var grid = document.createElement('div');
+        return out;
+      }
+      function showEmpty(){
+        holder.innerHTML =
+          '<div class="fb-empty"><div class="qr-card">' + QR_SVG + '</div>' +
+          '<p>Lass uns zusammen ein Erinnerungsfoto schiessen – scan den Code! 📸<br>' +
+          '<span class="mono">abschied.anja-renggli.ch/fotobox</span></p></div>';
+        grid = null;
+      }
+      function buildGrid(){
+        holder.innerHTML = '';
+        grid = document.createElement('div');
         grid.className = 'fb-grid';
-        list.slice(0, 6).forEach(function(f, i){
+        cells = [];
+        for (var c = 0; c < PER_PAGE; c++){
           var cell = document.createElement('div');
           cell.className = 'fb-cell';
-          var img = document.createElement('img');
-          img.src = f.url; img.alt = '';
+          var img = document.createElement('img'); img.alt = '';
           cell.appendChild(img);
           grid.appendChild(cell);
-          ctx.after(120 + i * 170, function(){ cell.classList.add('in'); });
-        });
+          cells.push({ cell: cell, img: img });
+        }
         holder.appendChild(grid);
       }
+      function fill(batch){
+        for (var k = 0; k < PER_PAGE; k++){
+          if (batch[k]){ cells[k].img.src = batch[k].url; cells[k].cell.style.display = ''; }
+          else { cells[k].cell.style.display = 'none'; }
+        }
+      }
+      // eine Seite zeigen, dann ausfaden und die nächste – im Kreis, bis die Szene endet
+      function step(){
+        if (!pages.length){ showEmpty(); return; }
+        if (!grid) buildGrid();
+        fill(pages[pageIdx % pages.length]);
+        grid.classList.add('on');
+        pageIdx++;
+        ctx.after(HOLD - 600, function(){ if (grid) grid.classList.remove('on'); });
+        ctx.after(HOLD, step);
+      }
+      function start(){
+        if (running) return;
+        running = true;
+        pageIdx = 0;
+        step();
+      }
 
-      render(window.__aperoFotos);
+      pages = toPages(window.__aperoFotos || []);
+      if (pages.length) start(); else showEmpty();
+
+      // frische Daten holen; falls vorher leer und jetzt Fotos: paging starten
       fetch('/api/apero-fotos').then(function(r){ return r.json(); }).then(function(d){
         window.__aperoFotos = d.fotos || [];
-        render(window.__aperoFotos);
+        pages = toPages(window.__aperoFotos);
+        if (pages.length && !running) start();
+        else if (!pages.length && !running) showEmpty();
       }).catch(function(){});
 
-      return 13000;
+      // Dauer: genug, um alle Seiten einmal zu zeigen (min. 8s)
+      var n = Math.max(pages.length, (window.__aperoFotos || []).length > 5 ? 3 : 1);
+      return Math.max(8000, n * HOLD + 800);
     }};
   }
+
+  /* Eine geteilte Fotobox-Szene: fix an 2 Stellen + dynamisch öfter, sobald >5 Bilder */
+  var fotoScene = fotoboxLiveScene();
 
   /* ---------- Reihenfolge: lustig -> persönlich -> ehrlich -> Gästebuch ---------- */
   var scenes = [
@@ -740,7 +790,7 @@
 
     traceScene(),
 
-    fotoboxLiveScene(),
+    fotoScene,
 
     chatScene('Live-Protokoll · Frage', [
       { who:'user', text:'Was macht Anja am liebsten in der Freizeit?' },
@@ -782,7 +832,7 @@
       { who:'bot',  text:'Einiges! EndlichSichtbar – eine KI-Plattform, die Social-Media-Posts für KMU erstellt, alleine gebaut. Die GEO Check App – prüft, wie Inhalte in KI-Modellen auftauchen. My Comeback Journey – eine Habit-App mit Gamification. Ganze Liste: anja-renggli.ch/projects.' }
     ]),
 
-    fotoboxLiveScene(),
+    fotoScene,
 
     guestbookScene(),
 
@@ -791,14 +841,15 @@
       { who:'bot',  text:'Das freut mich wirklich – und ich nehme das mal einfach so an, ohne ironischen Kommentar. 😄 Am 29. September in Goldau stossen wir darauf an. 🥂' }
     ]),
 
-    cardScene('Logout: in Vorbereitung 🛑', 'Echte Anja: bis 29.09. noch im Support',
-              'Apéro · Di 29.09.2026 · 17:15 Uhr · Geschäftsstelle Goldau', 8000)
+    cardScene('Abschied · 29.09.2026', 'Jetzt bin ich ausgeloggt.',
+              'Danke für alles. ❤️', 9000)
   ];
 
   /* ---------- Runner ---------- */
   var idx = 0, paused = false;
   var curTimers = [], curCleanups = [];
   var curDur = 8000, remaining = 8000, sceneStart = 0, advTimer = null;
+  var scenesSinceFoto = 0, forceFoto = false;
 
   function clearScene(){
     curTimers.forEach(clearTimeout); curTimers = [];
@@ -822,16 +873,36 @@
   }
   function play(n){
     clearScene();
-    idx = ((n % scenes.length) + scenes.length) % scenes.length;
+    var target = ((n % scenes.length) + scenes.length) % scenes.length;
+
+    // Sobald >5 Fotos da sind: alle paar Szenen die Galerie einschieben,
+    // ohne den regulären Ablauf zu verschieben.
+    if (!forceFoto && (window.__aperoFotos || []).length > 5
+        && scenesSinceFoto >= 5 && scenes[target] !== fotoScene){
+      forceFoto = true;
+      scenesSinceFoto = 0;
+      idx = target;
+    } else {
+      forceFoto = false;
+      idx = target;
+      scenesSinceFoto++;
+      if (scenes[idx] === fotoScene) scenesSinceFoto = 0;
+    }
+
+    var sceneObj = forceFoto ? fotoScene : scenes[idx];
     stage.innerHTML = '';
-    curDur = scenes[idx].build(makeCtx()) || 8000;
+    curDur = sceneObj.build(makeCtx()) || 8000;
     var sc = stage.firstElementChild;
     if (sc) requestAnimationFrame(function(){ sc.classList.add('in'); });
     startBar(curDur);
     sceneStart = performance.now();
     remaining = curDur;
     clearTimeout(advTimer);
-    if (!paused) advTimer = setTimeout(function(){ play(idx + 1); }, curDur);
+    if (!paused) advTimer = setTimeout(advance, curDur);
+  }
+  function advance(){
+    if (forceFoto){ forceFoto = false; play(idx); }   // jetzt die zurückgestellte Szene
+    else play(idx + 1);
   }
   function pause(){
     if (paused) return;
@@ -851,7 +922,7 @@
     curDur = remaining;
     bar.style.transition = 'width ' + remaining + 'ms linear';
     requestAnimationFrame(function(){ bar.style.width = '100%'; });
-    advTimer = setTimeout(function(){ play(idx + 1); }, remaining);
+    advTimer = setTimeout(advance, remaining);
   }
   function goto(n){
     paused = false;
