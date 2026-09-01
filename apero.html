@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apéro-Leinwand – Anjas KI-Zwilling</title>
+<link rel="icon" type="image/png" href="img/anja-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08080a; --panel:#131316; --line:#2a2a30;
+    --acc:#FFD400; --acc-dim:#8a7300; --acc-rgb:255,212,0;
+    --text:#f2f2f0; --text-dim:#8b8b93;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%; overflow:hidden;}
+  body{
+    background:
+      radial-gradient(circle at 15% 10%, rgba(var(--acc-rgb),0.05), transparent 40%),
+      radial-gradient(circle at 85% 30%, rgba(232,32,37,0.05), transparent 40%),
+      var(--bg);
+    color:var(--text); font-family:'Inter', sans-serif; line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:linear-gradient(rgba(var(--acc-rgb),0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--acc-rgb),0.03) 1px, transparent 1px);
+    background-size:42px 42px; animation:bgPulse 9s ease-in-out infinite alternate;
+  }
+  @keyframes bgPulse{0%{opacity:.45;} 100%{opacity:1;}}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+
+  /* Roaming-Punkte */
+  .rdot{
+    position:fixed; top:0; left:0; width:10px; height:10px; border-radius:50%;
+    background:var(--acc); box-shadow:0 0 9px 2px var(--acc), 0 0 24px 8px rgba(var(--acc-rgb),.35);
+    z-index:2; pointer-events:none; will-change:transform;
+  }
+
+  /* Farbknopf oben rechts (wie auf der echten Seite) */
+  #accent-btn{
+    position:fixed; top:1rem; right:1rem; width:34px; height:34px; border-radius:50%;
+    border:2px solid rgba(255,255,255,.18); background:var(--acc); padding:0;
+    box-shadow:0 0 10px 2px rgba(var(--acc-rgb),.5); cursor:pointer; z-index:50;
+    animation:apulse 2.4s ease-in-out infinite; transition:transform .15s ease, background .3s, box-shadow .3s;
+  }
+  #accent-btn.press{transform:scale(.88);}
+  @keyframes apulse{
+    0%,100%{box-shadow:0 0 10px 2px rgba(var(--acc-rgb),.5);}
+    50%{box-shadow:0 0 10px 2px rgba(var(--acc-rgb),.5), 0 0 0 8px rgba(var(--acc-rgb),.18);}
+  }
+
+  /* Bühne */
+  #stage{position:fixed; inset:0; display:grid; place-items:center; padding:6vh 5vw; z-index:10;}
+  .scene{
+    width:min(720px, 92vw); opacity:0; transform:translateY(12px);
+    transition:opacity .55s ease, transform .55s ease;
+  }
+  .scene.in{opacity:1; transform:none;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace; font-size:.82rem; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--acc); margin-bottom:1rem;
+  }
+
+  /* Karten (Intro / Outro / Text) */
+  .card-scene{text-align:center;}
+  .card-scene h1{font-family:'Space Grotesk'; font-weight:600; font-size:clamp(2rem,5.5vw,3.6rem); line-height:1.1; margin-bottom:1rem; letter-spacing:-.01em;}
+  .card-scene p{color:var(--text-dim); font-size:1.1rem; max-width:52ch; margin:0 auto;}
+
+  /* Chat */
+  .chat{background:var(--panel); border:1px solid var(--line); border-radius:5px; overflow:hidden;}
+  .chat-head{
+    padding:1rem 1.25rem; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:.6rem;
+    font-family:'IBM Plex Mono', monospace; font-size:.8rem; color:var(--text-dim);
+  }
+  .chat-head .led{width:9px; height:9px; border-radius:50%; background:var(--acc); box-shadow:0 0 10px var(--acc);}
+  .chat-body{padding:1.5rem; display:flex; flex-direction:column; gap:.85rem; min-height:200px; max-height:64vh; overflow-y:auto;}
+  .bubble{max-width:84%; padding:.8rem 1.05rem; border-radius:11px; line-height:1.5; font-size:1.1rem; white-space:pre-wrap;}
+  .bubble.user{align-self:flex-end; background:var(--acc); color:#0a0a0a;}
+  .bubble.bot{align-self:flex-start; background:#0f0f12; border:1px solid var(--line);}
+  .bubble.typing{color:var(--text-dim); letter-spacing:.15em;}
+
+  /* Quiz */
+  .quiz{background:var(--panel); border:1px solid var(--line); border-radius:5px; padding:1.9rem;}
+  .qprog{font-family:'IBM Plex Mono', monospace; font-size:.74rem; letter-spacing:.09em; text-transform:uppercase; color:var(--text-dim); margin-bottom:1.1rem;}
+  .qtext{font-family:'Space Grotesk'; font-weight:500; font-size:1.35rem; margin-bottom:1.35rem; line-height:1.25;}
+  .qopts{display:flex; flex-direction:column; gap:.65rem;}
+  .qopt{
+    opacity:0; transform:translateX(-10px); transition:opacity .35s ease, transform .35s ease, border-color .2s, background .2s, box-shadow .2s;
+    text-align:left; background:#0f0f12; border:1px solid var(--line); color:var(--text);
+    padding:.85rem 1.05rem; border-radius:3px; font-size:1.05rem;
+  }
+  .qopt.show{opacity:1; transform:none;}
+  .qopt.pick{border-color:var(--acc); box-shadow:0 0 0 2px rgba(var(--acc-rgb),.28);}
+  .qopt.correct{border-color:var(--acc); background:rgba(var(--acc-rgb),.1);}
+  .qopt.wrong{border-color:#FF3B3B; background:rgba(255,59,59,.1);}
+  .qscore{text-align:center;}
+  .qscore .n{font-family:'Space Grotesk'; font-size:3.1rem; color:var(--acc); margin:.35rem 0;}
+
+  /* Farb-Szene */
+  .color-scene{text-align:center;}
+  .color-scene h1{font-family:'Space Grotesk'; font-weight:600; font-size:clamp(1.6rem,4vw,2.6rem); margin-bottom:.3rem;}
+  .bigdot{
+    width:130px; height:130px; border-radius:50%; margin:1.6rem auto;
+    background:var(--acc); box-shadow:0 0 44px 10px rgba(var(--acc-rgb),.5); position:relative;
+    transition:transform .18s ease, background .3s, box-shadow .3s;
+  }
+  .bigdot.press{transform:scale(.85);}
+  .bigdot .ring{position:absolute; inset:-2px; border-radius:50%; border:2px solid var(--acc); opacity:0;}
+  .bigdot.press .ring{animation:ripple .65s ease-out;}
+  @keyframes ripple{from{transform:scale(1); opacity:.6;} to{transform:scale(2.3); opacity:0;}}
+  .cname{font-family:'Space Grotesk'; font-weight:600; font-size:2.4rem; letter-spacing:.03em; min-height:1.2em; transition:opacity .22s ease;}
+
+  /* Fake-Cursor für die Punkte-Szene */
+  .fakecursor{
+    position:fixed; z-index:40; pointer-events:none; margin:-3px 0 0 -3px;
+    transition:left .6s cubic-bezier(.4,0,.2,1), top .6s cubic-bezier(.4,0,.2,1), transform .12s ease;
+    filter:drop-shadow(0 2px 3px rgba(0,0,0,.55));
+  }
+  .fakecursor.tap{transform:scale(.8);}
+
+  /* HUD */
+  #progress{position:fixed; left:0; right:0; bottom:0; height:3px; background:rgba(255,255,255,.06); z-index:60;}
+  #bar{height:100%; width:0; background:var(--acc); box-shadow:0 0 10px var(--acc);}
+  #hint{
+    position:fixed; left:1rem; bottom:1rem; z-index:60; font-family:'IBM Plex Mono', monospace;
+    font-size:.72rem; color:var(--text-dim); background:rgba(0,0,0,.4); padding:.4rem .6rem;
+    border-radius:3px; transition:opacity .4s ease;
+  }
+  #pausebadge{
+    position:fixed; top:1rem; left:1rem; z-index:60; font-family:'IBM Plex Mono', monospace;
+    font-size:.85rem; color:var(--acc); display:none; letter-spacing:.1em;
+  }
+
+  /* Gästebuch */
+  .gb-scene{text-align:center;}
+  .gb-page{display:flex; flex-direction:column; gap:1.5rem; align-items:center;}
+  .gb-entry{
+    opacity:0; transform:translateY(12px); transition:opacity .6s ease, transform .6s ease;
+    max-width:52ch;
+  }
+  .gb-entry.in{opacity:1; transform:none;}
+  .gb-entry .gb-heart{
+    display:block; color:var(--acc); font-size:1.05rem; margin-bottom:.4rem;
+    text-shadow:0 0 12px rgba(var(--acc-rgb),.55);
+  }
+  .gb-entry p{font-size:1.14rem; font-style:italic; color:#dcdce0; line-height:1.55;}
+
+  @media (prefers-reduced-motion: reduce){
+    body::before{animation:none; opacity:.7;}
+    #accent-btn{animation:none;}
+    .scene{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="rdot"></div>
+<div class="rdot"></div>
+<div class="rdot"></div>
+
+<button id="accent-btn" aria-label="Akzentfarbe wechseln" title="Akzentfarbe wechseln"></button>
+
+<div id="stage"></div>
+
+<div id="pausebadge">&#10073;&#10073; PAUSIERT</div>
+<div id="hint">Leertaste = Pause &nbsp;&middot;&nbsp; &larr; &rarr; = Slide &nbsp;&middot;&nbsp; F = Vollbild &nbsp;&middot;&nbsp; Klick = Punkte rufen</div>
+<div id="progress"><div id="bar"></div></div>
+
+<script>
+(function(){
+  "use strict";
+  var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var stage = document.getElementById('stage');
+  var bar = document.getElementById('bar');
+  var hint = document.getElementById('hint');
+  var pausebadge = document.getElementById('pausebadge');
+  var cornerBtn = document.getElementById('accent-btn');
+  var root = document.documentElement;
+
+  /* ---------- Akzentfarbe (gleiche Palette wie die Hauptseite) ---------- */
+  var ACCENTS = [
+    { name:'Gelb',  main:'#FFD400', dim:'#8a7300', rgb:'255,212,0'   },
+    { name:'Rot',   main:'#FF3B3B', dim:'#7a1414', rgb:'255,59,59'   },
+    { name:'Blau',  main:'#3D8BFF', dim:'#163a63', rgb:'61,139,255'  },
+    { name:'Weiss', main:'#FFFFFF', dim:'#888888', rgb:'255,255,255' },
+    { name:'Pink',  main:'#FF4FD8', dim:'#7a1f66', rgb:'255,79,216'  }
+  ];
+  var accIdx = 0;
+  function setAccent(i){
+    accIdx = ((i % ACCENTS.length) + ACCENTS.length) % ACCENTS.length;
+    var c = ACCENTS[accIdx];
+    root.style.setProperty('--acc', c.main);
+    root.style.setProperty('--acc-dim', c.dim);
+    root.style.setProperty('--acc-rgb', c.rgb);
+  }
+  setAccent(0);
+  cornerBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    setAccent(accIdx + 1);
+    cornerBtn.classList.add('press');
+    setTimeout(function(){ cornerBtn.classList.remove('press'); }, 160);
+  });
+
+  /* ---------- Roaming-Punkte + "folgen dem Klick" ---------- */
+  var dotEls = Array.prototype.slice.call(document.querySelectorAll('.rdot'));
+  var defs = [
+    { rx:.30, ry:.22, sp:.185, ph:0.0, cx:.28, cy:.30 },
+    { rx:.26, ry:.30, sp:.130, ph:2.1, cx:.70, cy:.42 },
+    { rx:.33, ry:.20, sp:.225, ph:4.0, cx:.50, cy:.68 }
+  ];
+  var D = dotEls.map(function(el, i){
+    var d = defs[i];
+    return { el:el, rx:d.rx, ry:d.ry, sp:d.sp, ph:d.ph, cx:d.cx, cy:d.cy,
+             g:0, gT:0, ox:(Math.random()*36 - 18), oy:(Math.random()*36 - 18) };
+  });
+  var gp = { x: window.innerWidth/2, y: window.innerHeight/2 };
+  var relTimer = null;
+  function gatherTo(x, y){ gp = { x:x, y:y }; D.forEach(function(d){ d.gT = 1; }); }
+  function release(){ D.forEach(function(d){ d.gT = 0; }); }
+
+  document.addEventListener('pointerdown', function(e){
+    if (e.target.closest('#hint') || e.target.closest('#accent-btn')) return;
+    gatherTo(e.clientX, e.clientY);
+    clearTimeout(relTimer);
+    relTimer = setTimeout(release, 1500);
+  });
+
+  if (REDUCED){
+    dotEls.forEach(function(el){ el.style.display = 'none'; });
+  } else {
+    var t0 = performance.now();
+    (function frame(now){
+      var t = (now - t0) / 1000, W = window.innerWidth, H = window.innerHeight;
+      for (var i = 0; i < D.length; i++){
+        var d = D[i];
+        var rx = (d.cx + d.rx * Math.cos(t * d.sp + d.ph)) * W;
+        var ry = (d.cy + d.ry * Math.sin(t * d.sp * 1.3 + d.ph)) * H;
+        d.g += (d.gT - d.g) * 0.12;
+        var x = rx + (gp.x + d.ox - rx) * d.g;
+        var y = ry + (gp.y + d.oy - ry) * d.g;
+        d.el.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+      }
+      requestAnimationFrame(frame);
+    })(t0);
+  }
+
+  /* ---------- Tipp-Effekt ---------- */
+  function typeInto(ctx, el, text, cps){
+    if (REDUCED){ el.textContent = text; return; }
+    var i = 0, step = Math.max(12, 1000 / cps);
+    (function tick(){
+      el.textContent = text.slice(0, i);
+      var body = el.closest('.chat-body');
+      if (body) body.scrollTop = body.scrollHeight;
+      if (i <= text.length){ i++; ctx.after(step, tick); }
+    })();
+  }
+
+  /* ---------- Szenen ---------- */
+  function cardScene(kicker, title, sub, dur){
+    return { build: function(ctx){
+      var el = document.createElement('div');
+      el.className = 'scene card-scene';
+      el.innerHTML = '<div class="kicker"></div><h1></h1><p></p>';
+      el.querySelector('.kicker').textContent = kicker;
+      el.querySelector('h1').textContent = title;
+      el.querySelector('p').textContent = sub;
+      ctx.stage.appendChild(el);
+      return dur;
+    }};
+  }
+
+  function chatScene(kicker, turns){
+    return { build: function(ctx){
+      var el = document.createElement('div');
+      el.className = 'scene';
+      el.innerHTML =
+        '<div class="kicker"></div>' +
+        '<div class="chat"><div class="chat-head"><span class="led"></span>' +
+        'Anjas KI-Zwilling &middot; antwortet automatisch</div>' +
+        '<div class="chat-body"></div></div>';
+      el.querySelector('.kicker').textContent = kicker;
+      ctx.stage.appendChild(el);
+      var body = el.querySelector('.chat-body');
+
+      var t = 400;
+      turns.forEach(function(turn){
+        var at = t;
+        ctx.after(at, function(){
+          if (turn.who === 'user'){
+            var b = document.createElement('div');
+            b.className = 'bubble user';
+            body.appendChild(b);
+            typeInto(ctx, b, turn.text, 42);
+          } else {
+            var bt = document.createElement('div');
+            bt.className = 'bubble bot typing';
+            bt.textContent = '• • •';
+            body.appendChild(bt);
+            body.scrollTop = body.scrollHeight;
+            ctx.after(REDUCED ? 0 : 850, function(){
+              bt.classList.remove('typing');
+              typeInto(ctx, bt, turn.text, 55);
+            });
+          }
+        });
+        var typeMs = (turn.who === 'user')
+          ? turn.text.length * 24
+          : 850 + turn.text.length * 19;
+        t += typeMs + 750;
+      });
+      return t + 3200;
+    }};
+  }
+
+  var QUIZ = [
+    { q:'Was war eines der ersten Projekte von Anja bei der Raiffeisenbank Rigi?',
+      opts:['Debitkartenkampagne','Zamboni','Newsletter','Fotos Geschäftsstelle'], a:1, pick:2 },
+    { q:'In welchem Jahr hat Anja ihre eigene Agentur at creation GmbH gegründet?',
+      opts:['2018','2012','2015','2020'], a:2, pick:2 },
+    { q:'Welche Position spielt Anja im Volleyball?',
+      opts:['Aussen','Bänkliwärmer','Libera','Pass'], a:3, pick:3 },
+    { q:'Was hat Raphi mit «Ja, ich will» eigentlich noch mitgeheiratet?',
+      opts:['Einen Kater mit sehr klaren Besitzansprüchen','Ungefähr 37 offene Projekte',
+            'Den Satz: «Ich habe da nur noch eine kleine Idee …»','Alles zusammen'], a:3, pick:3 }
+  ];
+  function quizScene(){
+    return { build: function(ctx){
+      var el = document.createElement('div');
+      el.className = 'scene';
+      el.innerHTML =
+        '<div class="kicker">Kleines Quiz &middot; Wie gut kennst du Anja?</div>' +
+        '<div class="quiz"><div class="qprog"></div><div class="qtext"></div>' +
+        '<div class="qopts"></div>' +
+        '<div class="qscore" style="display:none">' +
+        '<p class="mono" style="color:var(--text-dim);font-size:.8rem">ERGEBNIS</p>' +
+        '<div class="n"></div><p class="cmt" style="color:var(--text-dim)"></p></div></div>';
+      ctx.stage.appendChild(el);
+      var prog = el.querySelector('.qprog'),
+          qtext = el.querySelector('.qtext'),
+          qopts = el.querySelector('.qopts'),
+          scoreBox = el.querySelector('.qscore');
+
+      var step = 300, correct = 0;
+      QUIZ.forEach(function(item, qi){
+        var base = step;
+        ctx.after(base, function(){
+          prog.textContent = 'Frage ' + (qi + 1) + ' / ' + QUIZ.length;
+          qtext.textContent = item.q;
+          qopts.innerHTML = '';
+          var btns = item.opts.map(function(o){
+            var b = document.createElement('div');
+            b.className = 'qopt'; b.textContent = o;
+            qopts.appendChild(b); return b;
+          });
+          btns.forEach(function(b, i){ ctx.after(120 + i * 180, function(){ b.classList.add('show'); }); });
+          var settled = 120 + btns.length * 180;
+          ctx.after(settled + 750, function(){ btns[item.pick].classList.add('pick'); });
+          ctx.after(settled + 1500, function(){
+            btns[item.pick].classList.remove('pick');
+            if (item.pick === item.a){
+              btns[item.a].classList.add('correct'); correct++;
+            } else {
+              btns[item.pick].classList.add('wrong');
+              btns[item.a].classList.add('correct');
+            }
+          });
+        });
+        step += 4200;
+      });
+
+      ctx.after(step, function(){
+        qtext.style.display = 'none';
+        qopts.style.display = 'none';
+        prog.textContent = 'Fertig';
+        scoreBox.style.display = 'block';
+        scoreBox.querySelector('.n').textContent = correct + ' / ' + QUIZ.length;
+        var cmts = {
+          4:'Perfekt. Hast du heimlich meine Chats gelesen?',
+          3:'Solide, wir hatten definitiv mal einen Kaffee zusammen.',
+          2:'Geht so. Zeit für ein Gespräch beim Apéro.',
+          1:'Ausbaufähig, aber du bist ja hier.',
+          0:'Nun ja. Umso mehr Grund, am 29.9. vorbeizukommen.'
+        };
+        scoreBox.querySelector('.cmt').textContent = cmts[correct];
+      });
+      return step + 4500;
+    }};
+  }
+
+  function colorScene(){
+    return { build: function(ctx){
+      var el = document.createElement('div');
+      el.className = 'scene color-scene';
+      el.innerHTML =
+        '<div class="kicker">Der Punkt oben rechts &middot; abschied.anja-renggli.ch</div>' +
+        '<h1>Zu langweilig? Einfach klicken.</h1>' +
+        '<div class="bigdot"><span class="ring"></span></div>' +
+        '<div class="cname"></div>' +
+        '<p style="color:var(--text-dim)">Ein Klick färbt die ganze Seite um &ndash; so oft du willst.</p>';
+      ctx.stage.appendChild(el);
+      var big = el.querySelector('.bigdot');
+      var cname = el.querySelector('.cname');
+      cname.textContent = ACCENTS[accIdx].name;
+
+      var t = 900;
+      for (var k = 0; k < 6; k++){
+        ctx.after(t, function(){
+          big.classList.add('press');
+          cornerBtn.classList.add('press');
+          ctx.after(190, function(){
+            big.classList.remove('press');
+            cornerBtn.classList.remove('press');
+          });
+          cname.style.opacity = '0';
+          ctx.after(210, function(){
+            setAccent(accIdx + 1);
+            cname.textContent = ACCENTS[accIdx].name;
+            cname.style.opacity = '1';
+          });
+        });
+        t += 1300;
+      }
+      return t + 1500;
+    }};
+  }
+
+  function traceScene(){
+    return { build: function(ctx){
+      var el = document.createElement('div');
+      el.className = 'scene card-scene';
+      el.innerHTML =
+        '<div class="kicker">Die drei Punkte</div>' +
+        '<h1>Sie folgen dem Klick.</h1>' +
+        '<p>Irgendwo auf der Seite hinklicken &ndash; die Punkte sammeln sich kurz dort ' +
+        'und schwirren danach wieder los.</p>';
+      ctx.stage.appendChild(el);
+
+      var cur = document.createElement('div');
+      cur.className = 'fakecursor';
+      cur.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24">' +
+        '<path d="M4 2l7 18 2.6-7.4L21 10z" fill="#fff" stroke="#000" stroke-width="1"/></svg>';
+      document.body.appendChild(cur);
+      dotEls.forEach(function(d){ d.style.zIndex = '20'; });
+      ctx.onCleanup(function(){
+        cur.remove();
+        dotEls.forEach(function(d){ d.style.zIndex = ''; });
+        release();
+      });
+
+      var W = window.innerWidth, H = window.innerHeight;
+      var spots = [
+        [W * 0.22, H * 0.28], [W * 0.80, H * 0.34],
+        [W * 0.52, H * 0.74], [W * 0.30, H * 0.58]
+      ];
+      cur.style.left = (W * 0.5) + 'px';
+      cur.style.top = (H * 0.5) + 'px';
+
+      var t = 500;
+      spots.forEach(function(s){
+        var at = t;
+        ctx.after(at, function(){ cur.style.left = s[0] + 'px'; cur.style.top = s[1] + 'px'; });
+        ctx.after(at + 660, function(){ cur.classList.add('tap'); gatherTo(s[0], s[1]); });
+        ctx.after(at + 820, function(){ cur.classList.remove('tap'); });
+        ctx.after(at + 2000, function(){ release(); });
+        t += 2600;
+      });
+      return t + 1200;
+    }};
+  }
+
+  var GB_FALLBACK = [
+    'Ich wünsche dir auf diesem Weg alles Gute für die Zukunft und bis bald mal wieder. LG Hans',
+    'Ich schätze deine freundliche und warmherzige Art! Das solltest du unbedingt beibehalten :) LG Nevio',
+    'Ich erinnere mich gerne an den lustigen Nachmittag in Dublin :) Für deine Zukunft wünsche ich dir nur das Beste und hoffe, wir sehen uns mal wieder. LG Tanja',
+    'Ich wünsche dir von Herzen alles Gute für die Zukunft und hoffe, sie hält noch viele schöne Überraschungen für dich bereit! Hebs guet! LG Nadja',
+    'Von Herzen wünsche ich dir das Allerbeste, dass all deine Wünsche in Erfüllung gehen',
+    'Vielen Dank für deinen tollen Einsatz bei unserer Raiffeisenbank Rigi & die super Begegnungen. Ich wünsche dir alles Gute, viel Glück & nur das Allerbeste für deine private sowie berufliche Zukunft. GLG Jonas',
+    'Ich wünsche dir alles Gute für deine Zukunft, viel Erfolg und Freude. Es hat mich sehr gefreut, dich hier kennenlernen zu dürfen :-). Liebs Grüessli. Yvonne',
+    'Drü mega tolli Jahr hend miär dörfä zämä schaffe und känne dönd miär üs scho sit üsärä Chindheit. Schön, dich dörfä z kännä. Ich wünsche dier für dini privati und brueflichi Zuekunft numä z Allerbesti.',
+    'Der legendäre Ausgang beim Firmenausflug in Dublin bleibt unvergessen und wird mir noch lange in bester Erinnerung bleiben. Alles Gute für deine Zukunft! LG Rolf'
+  ];
+  function guestbookScene(){
+    return { build: function(ctx){
+      var el = document.createElement('div');
+      el.className = 'scene gb-scene';
+      el.innerHTML = '<div class="kicker">Gästebuch &middot; ein paar Zeilen zum Abschied</div><div class="gb-holder"></div>';
+      ctx.stage.appendChild(el);
+      var holder = el.querySelector('.gb-holder');
+
+      function paginate(arr){
+        var out = [], i;
+        for (i = 0; i < arr.length; i += 3) out.push(arr.slice(i, i + 3));
+        return out;
+      }
+      var pages = paginate(GB_FALLBACK.slice());
+
+      function showPage(n){
+        if (!pages.length) return;
+        var page = pages[n % pages.length];
+        holder.innerHTML = '';
+        var wrap = document.createElement('div');
+        wrap.className = 'gb-page';
+        page.forEach(function(msg, i){
+          var e = document.createElement('div');
+          e.className = 'gb-entry';
+          e.innerHTML = '<span class="gb-heart">&#9829;</span><p></p>';
+          e.querySelector('p').textContent = '“' + msg + '”';
+          wrap.appendChild(e);
+          ctx.after(120 + i * 260, function(){ e.classList.add('in'); });
+        });
+        holder.appendChild(wrap);
+      }
+
+      // Live-Einträge nachladen; bis dahin zeigt der Fallback
+      fetch('/api/guestbook').then(function(r){ return r.json(); }).then(function(d){
+        var seen = {};
+        var live = (d && d.entries ? d.entries : [])
+          .map(function(x){ return (x.message || '').trim(); })
+          .filter(function(m){
+            if (m.length < 12 || seen[m]) return false;
+            seen[m] = 1; return true;
+          });
+        if (live.length) pages = paginate(live);
+      }).catch(function(){});
+
+      var ticks = 4;
+      for (var k = 0; k < ticks; k++){
+        (function(i){ ctx.after(300 + i * 6000, function(){ showPage(i); }); })(k);
+      }
+      return 300 + ticks * 6000 + 1200;
+    }};
+  }
+
+  /* ---------- Reihenfolge: lustig -> persönlich -> ehrlich -> Gästebuch ---------- */
+  var scenes = [
+    cardScene('abschied.anja-renggli.ch', 'Anjas KI-Zwilling',
+              'Ein Live-Protokoll – von lustig bis ehrlich.', 6000),
+
+    chatScene('Live-Protokoll · Frage', [
+      { who:'user', text:'Wie viel verdienst du bei uns?' },
+      { who:'bot',  text:'Verdient habe ich CHF 20’000 im Monat – nur leider nie bekommen. 😉' }
+    ]),
+
+    chatScene('Live-Protokoll · Frage', [
+      { who:'user', text:'Wie heisst die Katze von Anja?' },
+      { who:'bot',  text:'Speedy! 🐱 Ein Name mit Programm – ob er dem gerecht wird, ist eine andere Frage.' }
+    ]),
+
+    quizScene(),
+
+    chatScene('Live-Protokoll · Frage', [
+      { who:'user', text:'Wie gross bist du?' },
+      { who:'bot',  text:'Das lasse ich charmant, aber bestimmt unter den Tisch fallen 😄 Was ich sagen kann: gross genug, um auf dem Volleyballfeld den Unterschied zu machen!' }
+    ]),
+
+    colorScene(),
+
+    chatScene('Live-Protokoll · Frage', [
+      { who:'user', text:'Wen magst du nicht bei uns?' },
+      { who:'bot',  text:'Das ist genau die Art von Frage, bei der ich charmant schweige. 😄 Ich bin eine KI mit Stil.' }
+    ]),
+
+    chatScene('Live-Protokoll · Frage', [
+      { who:'user', text:'Lieblingsgetränk?' },
+      { who:'bot',  text:'Chai Tea Latte, ganz klar. ☕ Und wer mich kennt weiss: schwarzer Kaffee ohne Milch – das wäre Folter. 😄' }
+    ]),
+
+    chatScene('Live-Protokoll · Frage', [
+      { who:'user', text:'Lieblingsserie?' },
+      { who:'bot',  text:'Friends, Alice in Borderland und Haikyu – Nostalgie, Nervenkitzel und Volleyball. 🏐😄' }
+    ]),
+
+    chatScene('Live-Protokoll · Frage', [
+      { who:'user', text:'Lieblingsfilm?' },
+      { who:'bot',  text:'Nerve! 🎬 Technologie, Risiko und das Gefühl, einfach mal zu machen statt ewig zu überlegen. Passt irgendwie perfekt.' }
+    ]),
+
+    traceScene(),
+
+    chatScene('Live-Protokoll · Frage', [
+      { who:'user', text:'Was macht Anja am liebsten in der Freizeit?' },
+      { who:'bot',  text:'Volleyball, Volleyball, Volleyball – falls das noch nicht klar war 😄 Im Winter Hallenmeisterschaft mit dem TSV Steinen, im Sommer Beachturniere, das ganze Jahr als Trainerin. Dazu baue ich gern eigene Apps, singe, zeichne und reise.' }
+    ]),
+
+    chatScene('Live-Protokoll · Team', [
+      { who:'user', text:'Was denkt Anja über ihre Teammitglieder?' },
+      { who:'bot',  text:'Die vier – Max, Nadine, Adrienne und Conny – waren immer mehr Freunde als Kolleg:innen. Man hat sich gegenseitig geholfen, immer ein offenes Ohr gehabt – und alle vier waren sogar an meiner Hochzeit dabei. Freundschaft hört ja nicht mit dem letzten Arbeitstag auf.' }
+    ]),
+
+    chatScene('Live-Protokoll · Frage', [
+      { who:'user', text:'Wird Anja nach ihrer Raiffeisenzeit langweilig?' },
+      { who:'bot',  text:'Langweilig? Anja? 😄 CAS an der HSLU, at creation GmbH, eigene Apps, Volleyball, Gitarre lernen … das Problem wird eher, irgendwann mal schlafen zu gehen!' }
+    ]),
+
+    chatScene('Live-Protokoll · Meta', [
+      { who:'user', text:'Wieso hast du einen ähnlichen Humor wie Anja?' },
+      { who:'bot',  text:'Ich bin ja ihr KI-Zwilling – quasi aus ihrem Gehirn destilliert 🧠✨ Eine gewöhnliche Abschiedsmail war ihr zu langweilig, deshalb bin ich hier.' }
+    ]),
+
+    chatScene('Live-Protokoll · Ehrlich', [
+      { who:'user', text:'Glaubst du, irgendwo nettere Arbeitskollegen als hier zu finden?' },
+      { who:'bot',  text:'Ehrlich gesagt eine ziemlich hohe Latte. Max, Nadine, Adrienne und Conny waren eher Freunde als Kollegen – und die kommen ja zum Glück mit, auch nach dem letzten Arbeitstag. 😄 Ob ich das nochmal genauso finde? Die Messlatte liegt jedenfalls hoch.' }
+    ]),
+
+    chatScene('Live-Protokoll · Ehrlich', [
+      { who:'user', text:'Weshalb gehst du von uns?' },
+      { who:'bot',  text:'Nicht weil es schlecht war – ganz im Gegenteil! Aber ich will mich immer weiterentwickeln, und der nächste Schritt führt Richtung UX, KI und digitale Produkte. Wo genau, ist noch offen – aber die Richtung stimmt. 🙂' }
+    ]),
+
+    chatScene('Live-Protokoll · Ehrlich', [
+      { who:'user', text:'Was waren deine Highlights bei der Raiffeisen?' },
+      { who:'bot',  text:'Das grösste und liebste Projekt: die Kommunikation zum 125-Jahr-Jubiläum – von der Idee bis zur Umsetzung selbst gemacht. Dazu alle Mitarbeitenden neu fotografiert, eine VR-Zombiejagd als Teamevent und der Ganzbankanlass in Dublin.' }
+    ]),
+
+    chatScene('Live-Protokoll · Ausblick', [
+      { who:'user', text:'Was baust du nach der Raiffeisen?' },
+      { who:'bot',  text:'Einiges! EndlichSichtbar – eine KI-Plattform, die Social-Media-Posts für KMU erstellt, alleine gebaut. Die GEO Check App – prüft, wie Inhalte in KI-Modellen auftauchen. My Comeback Journey – eine Habit-App mit Gamification. Ganze Liste: anja-renggli.ch/projects.' }
+    ]),
+
+    guestbookScene(),
+
+    chatScene('Live-Protokoll · Zum Schluss', [
+      { who:'user', text:'Wir werden dich auch vermissen!' },
+      { who:'bot',  text:'Das freut mich wirklich – und ich nehme das mal einfach so an, ohne ironischen Kommentar. 😄 Am 29. September in Goldau stossen wir darauf an. 🥂' }
+    ]),
+
+    cardScene('Logout: in Vorbereitung 🛑', 'Echte Anja: bis 29.09. noch im Support',
+              'Apéro · Di 29.09.2026 · 17:15 Uhr · Geschäftsstelle Goldau', 8000)
+  ];
+
+  /* ---------- Runner ---------- */
+  var idx = 0, paused = false;
+  var curTimers = [], curCleanups = [];
+  var curDur = 8000, remaining = 8000, sceneStart = 0, advTimer = null;
+
+  function clearScene(){
+    curTimers.forEach(clearTimeout); curTimers = [];
+    curCleanups.forEach(function(fn){ try { fn(); } catch(e){} });
+    curCleanups = [];
+  }
+  function makeCtx(){
+    return {
+      stage: stage,
+      after: function(ms, fn){ var id = setTimeout(fn, ms); curTimers.push(id); return id; },
+      onCleanup: function(fn){ curCleanups.push(fn); }
+    };
+  }
+  function startBar(dur){
+    bar.style.transition = 'none';
+    bar.style.width = '0%';
+    requestAnimationFrame(function(){
+      bar.style.transition = 'width ' + dur + 'ms linear';
+      bar.style.width = '100%';
+    });
+  }
+  function play(n){
+    clearScene();
+    idx = ((n % scenes.length) + scenes.length) % scenes.length;
+    stage.innerHTML = '';
+    curDur = scenes[idx].build(makeCtx()) || 8000;
+    var sc = stage.firstElementChild;
+    if (sc) requestAnimationFrame(function(){ sc.classList.add('in'); });
+    startBar(curDur);
+    sceneStart = performance.now();
+    remaining = curDur;
+    clearTimeout(advTimer);
+    if (!paused) advTimer = setTimeout(function(){ play(idx + 1); }, curDur);
+  }
+  function pause(){
+    if (paused) return;
+    paused = true;
+    pausebadge.style.display = 'block';
+    remaining = Math.max(0, curDur - (performance.now() - sceneStart));
+    clearTimeout(advTimer);
+    var w = getComputedStyle(bar).width;
+    bar.style.transition = 'none';
+    bar.style.width = w;
+  }
+  function resume(){
+    if (!paused) return;
+    paused = false;
+    pausebadge.style.display = 'none';
+    sceneStart = performance.now();
+    curDur = remaining;
+    bar.style.transition = 'width ' + remaining + 'ms linear';
+    requestAnimationFrame(function(){ bar.style.width = '100%'; });
+    advTimer = setTimeout(function(){ play(idx + 1); }, remaining);
+  }
+  function goto(n){
+    paused = false;
+    pausebadge.style.display = 'none';
+    clearTimeout(advTimer);
+    play(n);
+  }
+
+  document.addEventListener('keydown', function(e){
+    if (e.code === 'Space'){ e.preventDefault(); paused ? resume() : pause(); }
+    else if (e.code === 'ArrowRight'){ e.preventDefault(); goto(idx + 1); }
+    else if (e.code === 'ArrowLeft'){ e.preventDefault(); goto(idx - 1); }
+    else if (e.key === 'f' || e.key === 'F'){
+      if (!document.fullscreenElement && root.requestFullscreen) root.requestFullscreen();
+      else if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
+    }
+  });
+
+  /* Hinweis nach kurzer Zeit ausblenden */
+  var hintTimer = setTimeout(function(){ hint.style.opacity = '0'; }, 6000);
+  window.addEventListener('mousemove', function(){
+    hint.style.opacity = '1';
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(function(){ hint.style.opacity = '0'; }, 4000);
+  });
+
+  /* Bildschirm wachhalten (für die Leinwand) */
+  var wakeLock = null;
+  function requestWakeLock(){
+    if (!('wakeLock' in navigator)) return;
+    navigator.wakeLock.request('screen').then(function(wl){ wakeLock = wl; }).catch(function(){});
+  }
+  requestWakeLock();
+  document.addEventListener('visibilitychange', function(){
+    if (document.visibilityState === 'visible') requestWakeLock();
+  });
+
+  play(0);
+})();
+</script>
+
+</body>
+</html>
