@@ -214,7 +214,35 @@
   .fb-empty .qr-card{width:min(240px,54vw);}
   @media (max-width:600px){ .fb-grid{grid-template-columns:repeat(2,1fr);} .fb-cell:first-child{grid-column:span 2; grid-row:span 1;} }
 
+  /* Die kleinen Rebellen – schauen von der Seite rein, immer in einer anderen Farbe als gerade aktiv */
+  .rebel{
+    position:fixed; z-index:30; width:clamp(80px,8vw,120px); pointer-events:none;
+    transition:transform .6s cubic-bezier(.34,1.5,.55,1);
+  }
+  .rebel .reb-svg{display:block; width:100%; height:auto; overflow:visible;
+    filter:drop-shadow(0 0 7px rgba(var(--rc-rgb),.55));}
+  .rebel-left { left:0; transform:translateX(-115%); }
+  .rebel-right{ right:0; transform:translateX(115%); }
+  .rebel-right .reb-svg{ transform:scaleX(-1); }
+  .rebel-left.in { transform:translateX(-24%) rotate(7deg); }
+  .rebel-right.in{ transform:translateX(24%)  rotate(-7deg); }
+
+  .rebel .reb-tip{ animation:rebTip 2s ease-in-out infinite; }
+  @keyframes rebTip{ 0%,100%{opacity:.55;} 50%{opacity:1;} }
+
+  .rebel.wave .reb-arm{ animation:rebWave .45s ease-in-out 4; transform-box:fill-box; transform-origin:100% 100%; }
+  @keyframes rebWave{ 0%,100%{transform:rotate(-16deg);} 50%{transform:rotate(24deg);} }
+
+  .rebel.wink .reb-eye-r{ animation:rebWink .5s ease-in-out 2; transform-box:fill-box; transform-origin:center; }
+  @keyframes rebWink{ 0%,100%{transform:scaleY(1);} 45%,55%{transform:scaleY(.12);} }
+
+  .rebel.laugh .reb-body{ animation:rebLaugh .32s ease-in-out 6; transform-box:fill-box; transform-origin:center bottom; }
+  @keyframes rebLaugh{ 0%,100%{transform:translateY(0) rotate(0);} 50%{transform:translateY(-5px) rotate(-3deg);} }
+  .rebel.laugh .reb-mouth{ animation:rebMouth .32s ease-in-out 6; transform-box:fill-box; transform-origin:center; }
+  @keyframes rebMouth{ 0%,100%{transform:scaleY(1);} 50%{transform:scaleY(2.4);} }
+
   @media (prefers-reduced-motion: reduce){
+    .rebel{display:none;}
     body::before{animation:none; opacity:.85;}
     #accent-btn{animation:none;}
     .scene{transition:none;}
@@ -973,6 +1001,55 @@
       .catch(function(){})
       .then(function(){ setTimeout(pollFotos, 60000); });
   })();
+
+  /* ---------- Die kleinen Rebellen ---------- */
+  var REBEL_SVG =
+    '<svg class="reb-svg" viewBox="0 0 100 112" fill="none" aria-hidden="true">' +
+      '<g class="reb-body" stroke="var(--rc)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">' +
+        '<line x1="50" y1="13" x2="50" y2="25"/>' +
+        '<circle class="reb-tip" cx="50" cy="8" r="4.5" fill="var(--rc)" stroke="none"/>' +
+        '<rect x="22" y="25" width="56" height="45" rx="14" fill="#0e0e12"/>' +
+        '<circle class="reb-eye-l" cx="40" cy="45" r="4.5" fill="var(--rc)" stroke="none"/>' +
+        '<circle class="reb-eye-r" cx="60" cy="45" r="4.5" fill="var(--rc)" stroke="none"/>' +
+        '<path class="reb-mouth" d="M42 57q8 6 16 0"/>' +
+        '<line x1="50" y1="70" x2="50" y2="76"/>' +
+        '<rect x="34" y="76" width="32" height="26" rx="9" fill="#0e0e12"/>' +
+        '<path class="reb-arm" d="M34 84q-13 -1 -17 -15"/>' +
+        '<path d="M66 86q11 1 13 11"/>' +
+      '</g>' +
+    '</svg>';
+
+  function spawnRebel(){
+    var edge = Math.random() < 0.5 ? 'left' : 'right';
+    var gestures = ['wave', 'wave', 'wink', 'laugh'];
+    var gesture = gestures[Math.floor(Math.random() * gestures.length)];
+
+    // Farbe: bewusst NICHT die gerade aktive
+    var pool = ACCENTS.filter(function(_, i){ return i !== accIdx; });
+    var col = pool[Math.floor(Math.random() * pool.length)];
+
+    var r = document.createElement('div');
+    r.className = 'rebel rebel-' + edge;
+    r.style.setProperty('--rc', col.main);
+    r.style.setProperty('--rc-rgb', col.rgb);
+    r.style.top = (16 + Math.random() * 56) + 'vh';
+    r.innerHTML = REBEL_SVG;
+    document.body.appendChild(r);
+
+    setTimeout(function(){ r.classList.add('in'); }, 30);
+    setTimeout(function(){ r.classList.add(gesture); }, 700);
+    setTimeout(function(){ r.classList.remove('in'); }, 3400);
+    setTimeout(function(){ r.remove(); }, 4200);
+  }
+
+  function scheduleRebel(){
+    var next = 16000 + Math.random() * 22000;   // alle 16–38 s ein Anlauf
+    setTimeout(function(){
+      if (document.visibilityState === 'visible' && Math.random() < 0.65) spawnRebel();
+      scheduleRebel();
+    }, next);
+  }
+  if (!REDUCED) setTimeout(scheduleRebel, 9000);
 
   play(0);
 })();
