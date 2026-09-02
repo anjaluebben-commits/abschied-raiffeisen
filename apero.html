@@ -230,8 +230,8 @@
   .rebel .reb-tip{ animation:rebTip 2s ease-in-out infinite; }
   @keyframes rebTip{ 0%,100%{opacity:.55;} 50%{opacity:1;} }
 
-  .rebel.wave .reb-arm{ animation:rebWave .45s ease-in-out 4; transform-box:fill-box; transform-origin:100% 100%; }
-  @keyframes rebWave{ 0%,100%{transform:rotate(-16deg);} 50%{transform:rotate(24deg);} }
+  .rebel.wave .reb-arm{ animation:rebWave .45s ease-in-out 4; transform-box:fill-box; transform-origin:0% 100%; }
+  @keyframes rebWave{ 0%,100%{transform:rotate(16deg);} 50%{transform:rotate(-24deg);} }
 
   .rebel.wink .reb-eye-r{ animation:rebWink .5s ease-in-out 2; transform-box:fill-box; transform-origin:center; }
   @keyframes rebWink{ 0%,100%{transform:scaleY(1);} 45%,55%{transform:scaleY(.12);} }
@@ -1063,8 +1063,8 @@
         '<path class="reb-mouth" d="M42 57q8 6 16 0"/>' +
         '<line x1="50" y1="70" x2="50" y2="76"/>' +
         '<rect x="34" y="76" width="32" height="26" rx="9" fill="#0e0e12"/>' +
-        '<path class="reb-arm" d="M34 84q-13 -1 -17 -15"/>' +
-        '<path d="M66 86q11 1 13 11"/>' +
+        '<path d="M34 86q-11 1 -13 11"/>' +
+        '<path class="reb-arm" d="M66 84q13 -1 17 -15"/>' +
         '<path class="reb-leg-l" d="M42 102l-6 9"/>' +
         '<path class="reb-leg-r" d="M58 102l6 9"/>' +
       '</g>' +
