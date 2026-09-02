@@ -85,12 +85,13 @@
   .hint-bot.in.poke{ transform:translateY(0) translateX(10px) rotate(9deg); }
   .hint-bot .hb-arm{ transform-box:fill-box; transform-origin:0% 100%; transition:transform 0.2s ease; }
   .hint-bot.poke .hb-arm{ transform:rotate(-20deg) translateX(4px); }
+  .hint-bot .hb-arm-l{ transform-box:fill-box; transform-origin:100% 100%; }
   .hint-bot .hb-tip{ animation:hbTip 2s ease-in-out infinite; }
   @keyframes hbTip{ 0%,100%{ opacity:0.5; } 50%{ opacity:1; } }
   .hint-bot.cheer{ animation:hbCheer 0.3s ease-in-out 4; }
   @keyframes hbCheer{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-5px); } }
-  .hint-bot.cheer .hb-arm{ animation:hbWave 0.3s ease-in-out 4; }
-  @keyframes hbWave{ 0%,100%{ transform:rotate(-25deg); } 50%{ transform:rotate(12deg); } }
+  .hint-bot.cheer .hb-arm-l{ animation:hbWave 0.32s ease-in-out 4; }
+  @keyframes hbWave{ 0%,100%{ transform:rotate(18deg); } 50%{ transform:rotate(-22deg); } }
   .hint-bot.cheer .hb-mouth{ transform-box:fill-box; transform-origin:center; transform:scaleY(1.6); }
 
   h1,h2,h3{font-family:'Space Grotesk', sans-serif; font-weight:600; letter-spacing:-0.01em;}
@@ -444,6 +445,7 @@ colorBtn.addEventListener('click', () => {
         '<line x1="34" y1="62" x2="34" y2="68"/>' +
         '<rect x="18" y="68" width="32" height="22" rx="8" fill="#0e0e12"/>' +
         '<path class="hb-arm" d="M50 74q14 0 20 8"/>' +
+        '<path class="hb-arm-l" d="M18 74q-12 -1 -17 -13"/>' +
       '</g>' +
     '</svg>';
 
