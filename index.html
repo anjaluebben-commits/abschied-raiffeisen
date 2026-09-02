@@ -72,6 +72,27 @@
   }
   @media (prefers-reduced-motion: reduce){ #color-switch{ animation:none; } }
 
+  /* Hinweis-Roboter, der einmal auf den Farbwechsler tippt */
+  .hint-bot{
+    position:fixed; top:0.4rem; right:3.3rem; z-index:180;
+    width:clamp(52px,7vw,64px); pointer-events:none;
+    transform:translateY(-150%);
+    transition:transform 0.55s cubic-bezier(0.34,1.4,0.6,1);
+    filter:drop-shadow(0 0 7px rgba(var(--yellow-rgb),0.5));
+  }
+  .hint-bot svg{ display:block; width:100%; height:auto; overflow:visible; }
+  .hint-bot.in{ transform:translateY(0); }
+  .hint-bot.in.poke{ transform:translateY(0) translateX(10px) rotate(9deg); }
+  .hint-bot .hb-arm{ transform-box:fill-box; transform-origin:0% 100%; transition:transform 0.2s ease; }
+  .hint-bot.poke .hb-arm{ transform:rotate(-20deg) translateX(4px); }
+  .hint-bot .hb-tip{ animation:hbTip 2s ease-in-out infinite; }
+  @keyframes hbTip{ 0%,100%{ opacity:0.5; } 50%{ opacity:1; } }
+  .hint-bot.cheer{ animation:hbCheer 0.3s ease-in-out 4; }
+  @keyframes hbCheer{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-5px); } }
+  .hint-bot.cheer .hb-arm{ animation:hbWave 0.3s ease-in-out 4; }
+  @keyframes hbWave{ 0%,100%{ transform:rotate(-25deg); } 50%{ transform:rotate(12deg); } }
+  .hint-bot.cheer .hb-mouth{ transform-box:fill-box; transform-origin:center; transform:scaleY(1.6); }
+
   h1,h2,h3{font-family:'Space Grotesk', sans-serif; font-weight:600; letter-spacing:-0.01em;}
   .mono{font-family:'IBM Plex Mono', monospace;}
   section{padding:5rem 1.5rem; max-width:760px; margin:0 auto;}
@@ -394,13 +415,61 @@ function applyColor(i){
   colorBtn.style.background = c.main;
   colorBtn.style.boxShadow = `0 0 10px 2px rgba(${c.rgb},0.5)`;
 }
-colorBtn.addEventListener('click', () => {
+let userTouchedColor = false;
+function cycleColor(){
   colorIndex = (colorIndex + 1) % colorStates.length;
   applyColor(colorIndex);
-  if(colorIndex === 0){
+  return colorIndex;
+}
+colorBtn.addEventListener('click', () => {
+  userTouchedColor = true;
+  if(cycleColor() === 0){
     setTimeout(() => alert("Na, heute nicht so entscheidungsfreudig 😄"), 50);
   }
 });
+
+// Kleiner Roboter zeigt nach 15 s den Farbwechsler – er tippt drauf, die Farbe springt um.
+(function colorHintBot(){
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const BOT =
+    '<svg viewBox="0 0 90 96" fill="none" aria-hidden="true">' +
+      '<g stroke="var(--yellow)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">' +
+        '<line x1="34" y1="10" x2="34" y2="22"/>' +
+        '<circle class="hb-tip" cx="34" cy="6" r="4" fill="var(--yellow)" stroke="none"/>' +
+        '<rect x="10" y="22" width="48" height="40" rx="13" fill="#0e0e12"/>' +
+        '<circle cx="26" cy="40" r="4" fill="var(--yellow)" stroke="none"/>' +
+        '<circle cx="42" cy="40" r="4" fill="var(--yellow)" stroke="none"/>' +
+        '<path class="hb-mouth" d="M27 50q7 5 14 0"/>' +
+        '<line x1="34" y1="62" x2="34" y2="68"/>' +
+        '<rect x="18" y="68" width="32" height="22" rx="8" fill="#0e0e12"/>' +
+        '<path class="hb-arm" d="M50 74q14 0 20 8"/>' +
+      '</g>' +
+    '</svg>';
+
+  function run(){
+    if (userTouchedColor) return;               // schon entdeckt – dann kein Hinweis nötig
+    if (document.hidden){ setTimeout(run, 4000); return; }
+
+    const bot = document.createElement('div');
+    bot.className = 'hint-bot';
+    bot.innerHTML = BOT;
+    document.body.appendChild(bot);
+
+    setTimeout(() => bot.classList.add('in'), 30);          // rutscht von oben rein
+    setTimeout(() => bot.classList.add('poke'), 950);       // Arm streckt sich zum Knopf
+    setTimeout(() => {                                      // „Klick“
+      if (userTouchedColor) return;
+      colorBtn.style.transform = 'scale(0.88)';
+      cycleColor();
+      setTimeout(() => { colorBtn.style.transform = ''; }, 160);
+    }, 1250);
+    setTimeout(() => { bot.classList.remove('poke'); bot.classList.add('cheer'); }, 1500);
+    setTimeout(() => bot.classList.remove('in'), 3800);     // wieder hoch
+    setTimeout(() => bot.remove(), 4500);
+  }
+  setTimeout(run, 15000);
+})();
 
 // Bg-Trace-Punkte: Route über den ganzen Bildschirm, bei Klick versammeln sie
 // sich dort kurz und schwirren danach zufällig verteilt wieder los, jeder auf
